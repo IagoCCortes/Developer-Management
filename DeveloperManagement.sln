@@ -6,13 +6,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{543C821D-2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperManagement.Core.Domain", "DeveloperManagement.Core.Domain\DeveloperManagement.Core.Domain.csproj", "{10DDAE66-4267-47D1-BD59-3C2EC23EDCEB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Development", "Development", "{679AC14B-5B2B-4BED-AF56-56AD9D9C51DF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WorkItemManagement", "WorkItemManagement", "{679AC14B-5B2B-4BED-AF56-56AD9D9C51DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperManagement.Development.Domain", "DeveloperManagement.Development.Domain\DeveloperManagement.Development.Domain.csproj", "{15CABE5C-F5D9-4349-8C92-098F657EF8A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperManagement.WorkItemManagement.Domain", "DeveloperManagement.WorkItemManagement.Domain\DeveloperManagement.WorkItemManagement.Domain.csproj", "{15CABE5C-F5D9-4349-8C92-098F657EF8A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperManagement.Development.Application", "DeveloperManagement.Development.Application\DeveloperManagement.Development.Application.csproj", "{6A5B4958-CAE5-427F-87CD-D18B92ACFD7E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperManagement.WorkItemManagement.Application", "DeveloperManagement.WorkItemManagement.Application\DeveloperManagement.WorkItemManagement.Application.csproj", "{6A5B4958-CAE5-427F-87CD-D18B92ACFD7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperManagement.Development.Infrastructure", "DeveloperManagement.Development.Infrastructure\DeveloperManagement.Development.Infrastructure.csproj", "{80B0B8EA-25EA-47D4-AA94-1ECA76C4D2A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperManagement.WorkItemManagement.Infrastructure", "DeveloperManagement.WorkItemManagement.Infrastructure\DeveloperManagement.WorkItemManagement.Infrastructure.csproj", "{80B0B8EA-25EA-47D4-AA94-1ECA76C4D2A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TeamManagement", "TeamManagement", "{87153C45-B6D3-44A0-B798-A3B9E9008568}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperManagement.TeamManagement.Domain", "DeveloperManagement.TeamManagement.Domain\DeveloperManagement.TeamManagement.Domain.csproj", "{0FFD4431-36F0-4228-B700-A80F02BA7176}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SprintManagement", "SprintManagement", "{E7DB0CE5-80D5-45C6-91A8-795AE1964AC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperManagement.SprintManagement.Domain", "DeveloperManagement.SprintManagement.Domain\DeveloperManagement.SprintManagement.Domain.csproj", "{E7D2194C-355F-4877-9F13-16A255ECC339}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +34,10 @@ Global
 		{15CABE5C-F5D9-4349-8C92-098F657EF8A1} = {679AC14B-5B2B-4BED-AF56-56AD9D9C51DF}
 		{6A5B4958-CAE5-427F-87CD-D18B92ACFD7E} = {679AC14B-5B2B-4BED-AF56-56AD9D9C51DF}
 		{80B0B8EA-25EA-47D4-AA94-1ECA76C4D2A5} = {679AC14B-5B2B-4BED-AF56-56AD9D9C51DF}
+		{87153C45-B6D3-44A0-B798-A3B9E9008568} = {24B39E65-D404-4E0B-BCA0-4E0AC7013319}
+		{0FFD4431-36F0-4228-B700-A80F02BA7176} = {87153C45-B6D3-44A0-B798-A3B9E9008568}
+		{E7DB0CE5-80D5-45C6-91A8-795AE1964AC7} = {24B39E65-D404-4E0B-BCA0-4E0AC7013319}
+		{E7D2194C-355F-4877-9F13-16A255ECC339} = {E7DB0CE5-80D5-45C6-91A8-795AE1964AC7}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{10DDAE66-4267-47D1-BD59-3C2EC23EDCEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -44,5 +56,13 @@ Global
 		{80B0B8EA-25EA-47D4-AA94-1ECA76C4D2A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80B0B8EA-25EA-47D4-AA94-1ECA76C4D2A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80B0B8EA-25EA-47D4-AA94-1ECA76C4D2A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FFD4431-36F0-4228-B700-A80F02BA7176}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FFD4431-36F0-4228-B700-A80F02BA7176}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FFD4431-36F0-4228-B700-A80F02BA7176}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FFD4431-36F0-4228-B700-A80F02BA7176}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7D2194C-355F-4877-9F13-16A255ECC339}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7D2194C-355F-4877-9F13-16A255ECC339}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7D2194C-355F-4877-9F13-16A255ECC339}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7D2194C-355F-4877-9F13-16A255ECC339}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
