@@ -1,5 +1,6 @@
 ﻿using System;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
 
 namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
 {
@@ -27,13 +28,29 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             State = state;
         }
 
-        public void ModifyStoryPoints(byte? points) => StoryPoints = points;
+        public void ModifyStoryPoints(byte? points)
+        {
+            StoryPoints = points;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<byte?>(nameof(StoryPoints), points));
+        }
 
-        public void ModifyRisk(Priority? risk) => Risk = risk;
+        public void ModifyRisk(Priority? risk)
+        {
+            Risk = risk;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<Priority?>(nameof(Risk), risk));
+        }
 
-        public void ModifyAccepyanceCriteria(string criteria) => AcceptanceCriteria = criteria;
+        public void ModifyAcceptanceCriteria(string criteria)
+        {
+            AcceptanceCriteria = criteria;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(AcceptanceCriteria), criteria));
+        }
 
-        public void ModifyValueArea(ValueArea valueArea) => ValueArea = valueArea;
+        public void ModifyValueArea(ValueArea valueArea)
+        {
+            ValueArea = valueArea;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<ValueArea>(nameof(ValueArea), valueArea));
+        }
 
         private void SetStateReason(WorkItemState state)
             => StateReason = state switch

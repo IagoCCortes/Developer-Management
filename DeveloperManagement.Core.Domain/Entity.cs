@@ -11,6 +11,14 @@ namespace DeveloperManagement.Core.Domain
             Id = Guid.NewGuid();
         }
         
+        protected Entity(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new DomainException(nameof(Id), $"{nameof(Id)} must not be empty");
+            
+            Id = id;
+        }
+        
         public override bool Equals(object obj)
         {
             var compareTo = obj as Entity;

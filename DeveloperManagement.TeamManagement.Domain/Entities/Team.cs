@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.Core.Domain.Interfaces;
 using DeveloperManagement.TeamManagement.Domain.Events;
@@ -11,16 +12,12 @@ namespace DeveloperManagement.TeamManagement.Domain.Entities
     {
         public string Name { get; private set; }
         public string Description { get; private set; }
-        public Guid ActiveSprint { get; private set; }
         public string TeamPicture { get; private set; }
-        private List<Guid> _administrators;
+        private readonly List<Guid> _administrators;
         public ReadOnlyCollection<Guid> Administrators => _administrators.AsReadOnly();
-        private List<Member> _members;
+        // Team Many to Many Member - https://udidahan.com/2009/01/24/ddd-many-to-many-object-relational-mapping/
+        private readonly List<Member> _members;
         public ReadOnlyCollection<Member> Members => _members.AsReadOnly();
-        private List<Sprint> _sprints;
-        public ReadOnlyCollection<Sprint> Sprints => _sprints.AsReadOnly();
-        private List<Guid> _workItems;
-        public ReadOnlyCollection<Guid> WorkItems => _workItems.AsReadOnly();
         public List<DomainEvent> DomainEvents { get; }
         
         public Team(string name, string description)
@@ -29,8 +26,7 @@ namespace DeveloperManagement.TeamManagement.Domain.Entities
             Description = description;
 
             _members = new List<Member>();
-            _sprints = new List<Sprint>();
-            _workItems = new List<Guid>();
+            _administrators = new List<Guid>();
             DomainEvents = new List<DomainEvent> {new CreatedTeamEvent(name, description)};
         }
 
@@ -66,22 +62,18 @@ namespace DeveloperManagement.TeamManagement.Domain.Entities
             if (member == null) 
                 throw new DomainException(nameof(Members), "A new member must not be empty");
 
-            if (!_members.Contains(member))
-            {
-                _members.Add(member);
-                DomainEvents.Add(new AddedMemberToTeamEvent(member));
-            }
+            if (_members.Contains(member)) return;
+            _members.Add(member);
+            DomainEvents.Add(new AddedMemberToTeamEvent(member));
         }
 
         public void AddAdministrator(Member member)
         {
             AddMember(member);
 
-            if (!_administrators.Contains(member.Id))
-            {
-                _administrators.Add(member.Id);
-                DomainEvents.Add(new AddedAdministratorToTeamEvent(member.Id));
-            }
+            if (_administrators.Contains(member.Id)) return;
+            _administrators.Add(member.Id);
+            DomainEvents.Add(new AddedAdministratorToTeamEvent(member.Id));
         }
     }
 }

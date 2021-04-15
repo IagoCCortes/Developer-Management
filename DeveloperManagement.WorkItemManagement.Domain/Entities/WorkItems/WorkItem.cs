@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.Core.Domain.Interfaces;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
 namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
@@ -44,9 +45,17 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         }
 
 
-        public void ModifyRepoLink(Link repoLink) => RepoLink = repoLink;
+        public void ModifyRepoLink(Link repoLink)
+        {
+            RepoLink = repoLink;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<Link>(nameof(RepoLink), repoLink));
+        }
 
-        public void ModifyPriority(Priority priority) => Priority = priority;
+        public void ModifyPriority(Priority priority)
+        {
+            Priority = priority;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<Priority>(nameof(Priority), priority));
+        }
 
         public void ModifyTitle(string title)
         {
@@ -54,6 +63,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(Title), "A work item must have a title");
 
             Title = title;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(Title), title));
         }
 
         public void ModifyArea(Guid area)
@@ -62,6 +72,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(Area), "Invalid area identifier");
 
             Area = area;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<Guid>(nameof(Area), area));
         }
 
         public void ModifyIteration(Guid iteration)
@@ -70,10 +81,14 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(Iteration), "Invalid Iteration identifier");
 
             Iteration = iteration;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<Guid>(nameof(Iteration), iteration));
         }
 
         public void ModifyDescription(string description)
-            => Description = description;
+        {
+            Description = description;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(Description), description));
+        }
 
         public void AddComment(string comment)
         {
@@ -81,6 +96,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(Comments), "A comment may not be empty");
 
             _comments.Add(comment);
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(Comments), comment));
         }
 
         public void AddTag(string tag)
@@ -89,6 +105,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(Tags), "A tag may not be empty");
 
             _tags.Add(tag);
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(Tags), tag));
         }
 
         public void AddAttachment(string attachment)
@@ -97,6 +114,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(Attachments), "An attachment may not be empty");
 
             _attachments.Add(attachment);
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(Attachments), attachment));
         }
 
         public void AddRelatedWork(RelatedWork relatedWork)
@@ -105,6 +123,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(RelatedWorks), "A relatedWork must not be null");
 
             _relatedWorks.Add(relatedWork);
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<RelatedWork>(nameof(RelatedWorks), relatedWork));
         }
 
         public void AssignToMember(Guid memberId)
@@ -113,6 +132,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(AssignedTo), "A member must be provided");
             
             AssignedTo = memberId;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<Guid>(nameof(AssignedTo), memberId));
         }
     }
 }

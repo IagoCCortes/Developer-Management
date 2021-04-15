@@ -1,6 +1,7 @@
 ﻿using System;
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
 
 namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
 {
@@ -23,9 +24,17 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             State = state;
         }
 
-        public void ModifyStackRank(int? stackRank) => StackRank = stackRank;
+        public void ModifyStackRank(int? stackRank)
+        {
+            StackRank = stackRank;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<int?>(nameof(StackRank), stackRank));
+        }
 
-        public void ModifyDueDate(DateTime? dueDate) => DueDate = dueDate;
+        public void ModifyDueDate(DateTime? dueDate)
+        {
+            DueDate = dueDate;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<DateTime?>(nameof(DueDate), dueDate));
+        }
 
         private void SetStateReason(WorkItemState state)
             => StateReason = state switch

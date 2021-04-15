@@ -1,5 +1,6 @@
 ﻿using System;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
 
 namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
 {
@@ -35,19 +36,47 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             State = state;
         }
 
-        public void ModifyEpicEffort(byte? epicEffort) => Effort = epicEffort;
-        
-        public void ModifyBusinessValue(byte? businessValue) => BusinessValue = businessValue;
+        public void ModifyEpicEffort(byte? epicEffort)
+        {
+            Effort = epicEffort;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<byte?>(nameof(Effort), epicEffort));
+        }
 
-        public void ModifyTimeCriticality(byte? timeCriticality) => TimeCriticality = timeCriticality;
-        
-        public void ModifyStartDate(DateTime? startDate) => StartDate = startDate;
-        
-        public void ModifyTargetDate(DateTime? targetDate) => TargetDate = targetDate;
-        
-        public void ModifyRisk(Priority? risk) => Risk = risk;
-        
-        public void ModifyValueArea(ValueArea valueArea) => ValueArea = valueArea;
+        public void ModifyBusinessValue(byte? businessValue)
+        {
+            BusinessValue = businessValue;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<byte?>(nameof(BusinessValue), businessValue));
+        }
+
+        public void ModifyTimeCriticality(byte? timeCriticality)
+        {
+            TimeCriticality = timeCriticality;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<byte?>(nameof(TimeCriticality), timeCriticality));
+        }
+
+        public void ModifyStartDate(DateTime? startDate)
+        {
+            StartDate = startDate;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<DateTime?>(nameof(StartDate), startDate));
+        }
+
+        public void ModifyTargetDate(DateTime? targetDate)
+        {
+            TargetDate = targetDate;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<DateTime?>(nameof(TargetDate), targetDate));
+        }
+
+        public void ModifyRisk(Priority? risk)
+        {
+            Risk = risk;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<Priority?>(nameof(Risk), risk));
+        }
+
+        public void ModifyValueArea(ValueArea valueArea)
+        {
+            ValueArea = valueArea;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<ValueArea>(nameof(ValueArea), valueArea));
+        }
 
         private void SetStateReason(WorkItemState state)
             => StateReason = state switch

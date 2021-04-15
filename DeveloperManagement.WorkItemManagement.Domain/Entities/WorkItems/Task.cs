@@ -2,6 +2,7 @@
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.Core.Domain.Extensions;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
 namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
@@ -37,11 +38,23 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             StateReason = stateReason;
         }
 
-        public void ModifyActivity(Activity? activity) => Activity = activity;
+        public void ModifyActivity(Activity? activity)
+        {
+            Activity = activity;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<Activity?>(nameof(Activity), activity));
+        }
 
-        public void ModifyEffort(Effort effort) => Effort = effort;
+        public void ModifyEffort(Effort effort)
+        {
+            Effort = effort;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<Effort>(nameof(Effort), effort));
+        }
 
-        public void ModifyIntegratedInBuild(string integratedInBuild) => IntegratedInBuild = integratedInBuild;
+        public void ModifyIntegratedInBuild(string integratedInBuild)
+        {
+            IntegratedInBuild = integratedInBuild;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(IntegratedInBuild), integratedInBuild));
+        }
 
         private static void ValidateStateAndStateReason(WorkItemState state, StateReason stateReason)
         {

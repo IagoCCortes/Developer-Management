@@ -13,7 +13,7 @@ namespace DeveloperManagement.TeamManagement.Domain.Entities
         public Member(string name, EmailAddress emailAddress)
         {
             var errors = new Dictionary<string, string[]>();
-            if (string.IsNullOrWhiteSpace(name) || emailAddress == null)
+            if (string.IsNullOrWhiteSpace(name))
                 errors.Add(nameof(Name), new[] {$"{nameof(Name)} must not be empty"});
             if (emailAddress == null)
                 errors.Add(nameof(EmailAddress), new[] {$"{nameof(EmailAddress)} must not be empty"});
