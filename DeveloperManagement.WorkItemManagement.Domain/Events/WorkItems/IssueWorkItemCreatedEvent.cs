@@ -10,7 +10,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
         public string Title { get; }
         public WorkItemState State { get; }
         public Guid Area { get; }
-        public Guid Iteration { get; }
+        public Guid? Iteration { get; }
         public Priority Priority { get; }
         
         public int? StackRank { get; }

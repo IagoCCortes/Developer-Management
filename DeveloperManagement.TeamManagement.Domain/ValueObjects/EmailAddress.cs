@@ -13,7 +13,8 @@ namespace DeveloperManagement.TeamManagement.Domain.ValueObjects
 
         public EmailAddress(string username, string mailServer, string topLevelDomain)
         {
-            var invalidFields = AreNullOrWhiteSpace(username, mailServer, topLevelDomain);
+            var invalidFields = AreNullOrWhiteSpace((nameof(Username), username), (nameof(MailServer), mailServer),
+                (nameof(TopLevelDomain), topLevelDomain));
             if (invalidFields.Any())
                 throw new DomainException(invalidFields
                     .Select(x => new {Key = nameof(x), Value = new[] {$"{nameof(x)} cannot be empty"}})

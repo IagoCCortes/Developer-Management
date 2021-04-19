@@ -13,11 +13,15 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public Effort Effort { get; private set; }
         public string IntegratedInBuild { get; private set; }
 
-
-        public Task(string title, Guid area, Guid iteration, Activity activity, Effort effort,
-            string integratedInBuild, Priority priority = Priority.Medium) : base(title, area, iteration, priority)
+        private Task()
         {
-            ModifyState(WorkItemState.New, StateReason.New);
+        }
+
+        public Task(string title, Guid area, Activity activity, Effort effort, string integratedInBuild,
+            Priority priority = Priority.Medium) : base(title, area, priority)
+        {
+            State = WorkItemState.New;
+            StateReason = StateReason.New;
             Activity = activity;
             Effort = effort;
             IntegratedInBuild = integratedInBuild;
@@ -26,9 +30,9 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public void ModifyState(WorkItemState state, StateReason stateReason)
         {
             ValidateStateAndStateReason(state, stateReason);
-            State = state;
             StateReason = stateReason;
-            
+            base.ModifyState(state);
+
             // modify effort, when it is closed remaining hours should be added to completed and then set to 0
         }
 
@@ -36,6 +40,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         {
             ValidateStateAndStateReason(State, stateReason);
             StateReason = stateReason;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<StateReason>(nameof(StateReason), stateReason));
         }
 
         public void ModifyActivity(Activity? activity)

@@ -5,7 +5,11 @@ namespace DeveloperManagement.WorkItemManagement.Domain.ValueObjects
 {
     public class Link : ValueObject
     {
-        public string Hyperlink { get; }
+        public string Hyperlink { get; private set; }
+
+        private Link()
+        {
+        }
 
         public Link(string hyperlink)
         {

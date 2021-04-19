@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.Core.Domain.Extensions;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
@@ -16,11 +17,15 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public string SystemInfo { get; private set; }
         public string FoundInBuild { get; private set; }
 
-        public Bug(string title, Guid area, Guid iteration, StateReason stateReason = StateReason.New) : base(title,
-            area, iteration, Priority.Medium)
+        private Bug()
         {
-            ModifyState(WorkItemState.New, stateReason);
+        }
 
+        public Bug(string title, Guid area, StateReason stateReason = StateReason.New) : base(title, area,
+            Priority.Medium)
+        {
+            ValidateStateAndStateReason(WorkItemState.New, stateReason);
+            State = WorkItemState.New;
             StateReason = stateReason;
             Severity = Priority.Medium;
         }
@@ -28,14 +33,15 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public void ModifyState(WorkItemState state, StateReason stateReason)
         {
             ValidateStateAndStateReason(state, stateReason);
-            State = state;
             StateReason = stateReason;
+            base.ModifyState(state);
         }
 
         public void ModifyStateReason(StateReason stateReason)
         {
             ValidateStateAndStateReason(State, stateReason);
             StateReason = stateReason;
+            DomainEvents.Add(new WorkItemFieldModifiedEvent<StateReason>(nameof(StateReason), stateReason));
         }
 
         public void ModifyEffort(Effort effort)

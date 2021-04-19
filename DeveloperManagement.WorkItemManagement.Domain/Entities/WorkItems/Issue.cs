@@ -10,18 +10,23 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public int? StackRank { get; private set; }
         public DateTime? DueDate { get; private set; }
 
-        public Issue(string title, Guid area, Guid iteration, int? stackRank, DateTime? dueDate,
-            Priority priority = Priority.Medium) : base(title, area, iteration, priority)
+        private Issue()
         {
-            SetStateReason(WorkItemState.New);
+        }
+
+        public Issue(string title, Guid area, int? stackRank, DateTime? dueDate, Priority priority = Priority.Medium) :
+            base(title, area, priority)
+        {
+            State = WorkItemState.Active;
+            StateReason = StateReason.New;
             StackRank = stackRank;
             DueDate = dueDate;
         }
 
-        public void ModifyState(WorkItemState state)
+        public override void ModifyState(WorkItemState state)
         {
             SetStateReason(state);
-            State = state;
+            base.ModifyState(state);
         }
 
         public void ModifyStackRank(int? stackRank)
@@ -36,7 +41,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             DomainEvents.Add(new WorkItemFieldModifiedEvent<DateTime?>(nameof(DueDate), dueDate));
         }
 
-        private void SetStateReason(WorkItemState state)
+        private StateReason SetStateReason(WorkItemState state)
             => StateReason = state switch
             {
                 WorkItemState.Active => StateReason.New,

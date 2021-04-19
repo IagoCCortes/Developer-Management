@@ -4,28 +4,32 @@ using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
 
 namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
 {
-    public class UserStory : WorkItem
+    public sealed class UserStory : WorkItem
     {
         public byte? StoryPoints { get; private set; }
         public Priority? Risk { get; private set; }
         public string AcceptanceCriteria { get; private set; }
         public ValueArea ValueArea { get; private set; }
 
-        public UserStory(string title, Guid area, Guid iteration, byte? storyPoints, Priority? risk,
-            string acceptanceCriteria, ValueArea valueArea = ValueArea.Business, Priority priority = Priority.Medium) : base(title, area,
-            iteration, priority)
+        private UserStory()
         {
-            ModifyState(WorkItemState.New);
+        }
+
+        public UserStory(string title, Guid area, byte? storyPoints, Priority? risk, string acceptanceCriteria,
+            ValueArea valueArea = ValueArea.Business, Priority priority = Priority.Medium) : base(title, area, priority)
+        {
+            State = WorkItemState.New;
+            StateReason = StateReason.New;
             StoryPoints = storyPoints;
             Risk = risk;
             AcceptanceCriteria = acceptanceCriteria;
             ValueArea = valueArea;
         }
 
-        public void ModifyState(WorkItemState state)
+        public override void ModifyState(WorkItemState state)
         {
             SetStateReason(state);
-            State = state;
+            base.ModifyState(state);
         }
 
         public void ModifyStoryPoints(byte? points)
@@ -52,7 +56,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             DomainEvents.Add(new WorkItemFieldModifiedEvent<ValueArea>(nameof(ValueArea), valueArea));
         }
 
-        private void SetStateReason(WorkItemState state)
+        private StateReason SetStateReason(WorkItemState state)
             => StateReason = state switch
             {
                 WorkItemState.New => StateReason.New,

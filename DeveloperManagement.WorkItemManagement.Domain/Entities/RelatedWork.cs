@@ -11,6 +11,8 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities
         public string Comment { get; private set; }
         public Link Url { get; private set; }
         public Guid? WorkItemId{ get; private set; }
+        
+        private RelatedWork() {}
 
         private RelatedWork(LinkType linkType, string comment, Link url, Guid? workItemId)
         {
@@ -25,5 +27,10 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities
 
         public static RelatedWork CreateWorkItemRelatedWork(LinkType linkType, string comment, Guid workItemId)
             => new RelatedWork(linkType, comment, null, workItemId);
+
+        public void ModifyComment(string comment)
+        {
+            Comment = comment;
+        }
     }
 }

@@ -14,13 +14,15 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public Priority? Risk { get; private set; }
         public ValueArea ValueArea { get; private set; }
 
-        public Epic(string title, Guid area, Guid iteration, byte? effort, byte? businessValue,
+        private Epic() {}
+        public Epic(string title, Guid area, byte? effort, byte? businessValue,
             byte? timeCriticality, DateTime? startDate, DateTime? targetDate, Priority? risk,
             ValueArea valueArea = ValueArea.Business,
             Priority priority = Priority.Medium)
-            : base(title, area, iteration, priority)
+            : base(title, area, priority)
         {
-            ModifyState(WorkItemState.New);
+            State = WorkItemState.New;
+            StateReason = StateReason.AddedToBacklog;
             Effort = effort;
             BusinessValue = businessValue;
             TimeCriticality = timeCriticality;
@@ -30,10 +32,10 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             ValueArea = valueArea;
         }
 
-        public void ModifyState(WorkItemState state)
-        {
+        public override void ModifyState(WorkItemState state)
+        { 
             SetStateReason(state);
-            State = state;
+            base.ModifyState(state);
         }
 
         public void ModifyEpicEffort(byte? epicEffort)
@@ -78,7 +80,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             DomainEvents.Add(new WorkItemFieldModifiedEvent<ValueArea>(nameof(ValueArea), valueArea));
         }
 
-        private void SetStateReason(WorkItemState state)
+        private StateReason SetStateReason(WorkItemState state)
             => StateReason = state switch
             {
                 WorkItemState.New => StateReason.AddedToBacklog,

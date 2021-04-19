@@ -5,4 +5,20 @@
         <RootNamespace>DeveloperManagement.WorkItemManagement.Infrastructure</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="ClrHeapAllocationAnalyzer" Version="3.0.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
+      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.0-alpha.2" />
+      <PackageReference Include="ReflectionAnalyzers" Version="0.1.22-dev">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DeveloperManagement.Core.Application\DeveloperManagement.Core.Application.csproj" />
+      <ProjectReference Include="..\DeveloperManagement.WorkItemManagement.Application\DeveloperManagement.WorkItemManagement.Application.csproj" />
+      <ProjectReference Include="..\DeveloperManagement.WorkItemManagement.Domain\DeveloperManagement.WorkItemManagement.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
