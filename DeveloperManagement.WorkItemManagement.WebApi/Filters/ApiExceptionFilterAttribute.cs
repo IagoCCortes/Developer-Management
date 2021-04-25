@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DeveloperManagement.Core.Application.Exceptions;
+using DeveloperManagement.Core.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -17,6 +18,7 @@ namespace DeveloperManagement.WorkItemManagement.WebApi.Filters
             // Register known exception types and handlers.
             _exceptionHandlers = new Dictionary<Type, Action<ExceptionContext>>
             {
+                { typeof(DomainException), HandleDomainInvariantException },
                 { typeof(ValidationException), HandleValidationException },
                 { typeof(NotFoundException), HandleNotFoundException },
             };
@@ -45,6 +47,21 @@ namespace DeveloperManagement.WorkItemManagement.WebApi.Filters
             }
 
             HandleUnknownException(context);
+        }
+        
+        private void HandleDomainInvariantException(ExceptionContext context)
+        {
+            var exception = context.Exception as DomainException;
+
+            var details = new ValidationProblemDetails(exception.Errors)
+            {
+                Title = exception.Message,
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
+            };
+
+            context.Result = new BadRequestObjectResult(details);
+
+            context.ExceptionHandled = true;
         }
 
         private void HandleValidationException(ExceptionContext context)

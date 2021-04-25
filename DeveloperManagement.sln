@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperManagement.Core.Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperManagement.WorkItemManagement.WebApi", "DeveloperManagement.WorkItemManagement.WebApi\DeveloperManagement.WorkItemManagement.WebApi.csproj", "{7BA79C6D-596C-4720-86F3-DDCDDA46B77B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperManagement.TeamManagement.Infrastructure", "DeveloperManagement.TeamManagement.Infrastructure\DeveloperManagement.TeamManagement.Infrastructure.csproj", "{B0CE167E-01D3-45AA-9ACE-79409F832334}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,7 @@ Global
 		{E7D2194C-355F-4877-9F13-16A255ECC339} = {E7DB0CE5-80D5-45C6-91A8-795AE1964AC7}
 		{0F9A806C-9E10-4AA1-8306-6027A9289CBD} = {543C821D-2511-480E-A06A-99823E211A6B}
 		{7BA79C6D-596C-4720-86F3-DDCDDA46B77B} = {679AC14B-5B2B-4BED-AF56-56AD9D9C51DF}
+		{B0CE167E-01D3-45AA-9ACE-79409F832334} = {87153C45-B6D3-44A0-B798-A3B9E9008568}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{10DDAE66-4267-47D1-BD59-3C2EC23EDCEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -78,5 +81,9 @@ Global
 		{7BA79C6D-596C-4720-86F3-DDCDDA46B77B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BA79C6D-596C-4720-86F3-DDCDDA46B77B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BA79C6D-596C-4720-86F3-DDCDDA46B77B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0CE167E-01D3-45AA-9ACE-79409F832334}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0CE167E-01D3-45AA-9ACE-79409F832334}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0CE167E-01D3-45AA-9ACE-79409F832334}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0CE167E-01D3-45AA-9ACE-79409F832334}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

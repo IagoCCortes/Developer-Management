@@ -11,10 +11,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public string AcceptanceCriteria { get; private set; }
         public ValueArea ValueArea { get; private set; }
 
-        private UserStory()
-        {
-        }
-
         public UserStory(string title, Guid area, byte? storyPoints, Priority? risk, string acceptanceCriteria,
             ValueArea valueArea = ValueArea.Business, Priority priority = Priority.Medium) : base(title, area, priority)
         {

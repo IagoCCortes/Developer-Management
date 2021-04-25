@@ -7,12 +7,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
 {
     public class FeatureWorkItemCreatedEvent : DomainEvent
     {
-        public string Title { get; }
-        public WorkItemState State { get; }
-        public Guid Area { get; }
-        public Guid? Iteration { get; }
-        public Priority Priority { get; }
-
         public byte? Effort { get; }
         public byte? BusinessValue { get; }
         public byte? TimeCriticality { get; }
@@ -23,11 +17,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
 
         public FeatureWorkItemCreatedEvent(Feature feature)
         {
-            Title = feature.Title;
-            State = feature.State;
-            Area = feature.Area;
-            Iteration = feature.Iteration;
-            Priority = feature.Priority;
             Effort = feature.Effort;
             BusinessValue = feature.BusinessValue;
             TimeCriticality = feature.TimeCriticality;

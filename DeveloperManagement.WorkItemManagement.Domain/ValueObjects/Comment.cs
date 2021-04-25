@@ -9,10 +9,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.ValueObjects
         public string Text { get; private set; }
         public DateTime CommentedAt { get; private set; }
 
-        private Comment()
-        {
-        }
-
         public Comment(string text, DateTime commentedAt)
         {
             Text = text;

@@ -14,10 +14,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.ValueObjects
         public string MimeType { get; private set; }
         public DateTime Created { get; private set; }
 
-        private Attachment()
-        {
-        }
-
         public Attachment(string path, string fileName, string mimeType, DateTime created)
         {
             var invalidFields = AreNullOrWhiteSpace((nameof(Path), path), (nameof(FileName), fileName),

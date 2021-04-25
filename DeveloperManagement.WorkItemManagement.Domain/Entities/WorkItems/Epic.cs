@@ -14,7 +14,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public Priority? Risk { get; private set; }
         public ValueArea ValueArea { get; private set; }
 
-        private Epic() {}
         public Epic(string title, Guid area, byte? effort, byte? businessValue,
             byte? timeCriticality, DateTime? startDate, DateTime? targetDate, Priority? risk,
             ValueArea valueArea = ValueArea.Business,

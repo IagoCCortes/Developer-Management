@@ -7,10 +7,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.ValueObjects
     {
         public string Text { get; private set; }
 
-        private Tag()
-        {
-        }
-
         public Tag(string text)
         {
             Text = text;

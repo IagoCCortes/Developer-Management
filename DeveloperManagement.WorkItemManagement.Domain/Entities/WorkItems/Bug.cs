@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.Core.Domain.Extensions;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
@@ -21,13 +20,14 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         {
         }
 
-        public Bug(string title, Guid area, StateReason stateReason = StateReason.New) : base(title, area,
-            Priority.Medium)
+        private Bug(string title, Guid area, Priority priority, StateReason stateReason, Priority severity) : base(
+            title,
+            area, priority)
         {
             ValidateStateAndStateReason(WorkItemState.New, stateReason);
             State = WorkItemState.New;
             StateReason = stateReason;
-            Severity = Priority.Medium;
+            Severity = severity;
         }
 
         public void ModifyState(WorkItemState state, StateReason stateReason)
@@ -100,6 +100,32 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
 
             if (invalidNew || invalidActive || invalidResolved || invalidClosed)
                 throw new DomainException(nameof(StateReason), "Invalid reason for current state");
+        }
+
+        public class BugBuilder : WorkItemBuilder<Bug>
+        {
+            public BugBuilder(string title, Guid area, Priority priority = Priority.Medium,
+                StateReason stateReason = StateReason.New, Priority severity = Priority.Medium)
+            {
+                WorkItem = new Bug(title, area, priority, stateReason, severity);
+            }
+
+            public BugBuilder SetBugOptionalFields(Effort effort, string integratedInBuild, byte? storyPoints,
+                string systemInfo, string foundInBuild)
+            {
+                WorkItem.Effort = effort;
+                WorkItem.IntegratedInBuild = integratedInBuild;
+                WorkItem.StoryPoints = storyPoints;
+                WorkItem.SystemInfo = systemInfo;
+                WorkItem.FoundInBuild = foundInBuild;
+                return this;
+            }
+
+            public override Bug BuildWorkItem()
+            {
+                WorkItem.DomainEvents.Add(new BugCreatedEvent(WorkItem));
+                return WorkItem;
+            }
         }
     }
 }

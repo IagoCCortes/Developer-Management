@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.Core.Domain.Interfaces;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
@@ -16,6 +17,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public string Title { get; private set; }
         public Guid? AssignedTo { get; private set; }
         public WorkItemState State { get; protected set; }
+        public StateReason StateReason { get; protected set; }
         public Guid Area { get; private set; }
         public Guid? Iteration { get; private set; }
         public string Description { get; private set; }
@@ -29,10 +31,12 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public ReadOnlyCollection<RelatedWork> RelatedWorks => _relatedWorks.AsReadOnly();
         private readonly List<Attachment> _attachments;
         public ReadOnlyCollection<Attachment> Attachments => _attachments.AsReadOnly();
-        public StateReason StateReason { get; protected set; }
         public List<DomainEvent> DomainEvents { get; private set; }
 
-        protected WorkItem() {}
+        protected WorkItem()
+        {
+        }
+
         protected WorkItem(string title, Guid area, Priority priority)
         {
             Title = title;
@@ -117,6 +121,9 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
 
         public void AddRelatedWork(RelatedWork relatedWork)
         {
+            if (relatedWork.ReferencedWorkItemId.HasValue && relatedWork.ReferencedWorkItemId.Value == Id)
+                throw new DomainException(nameof(RelatedWorks),
+                    "A work item's relatedWork must not be reference itself");
             if (relatedWork == null)
                 throw new DomainException(nameof(RelatedWorks), "A relatedWork must not be null");
 
@@ -136,7 +143,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public virtual void ModifyState(WorkItemState state)
         {
             State = state;
-            
+
             DomainEvents.AddRange(new DomainEvent[]
             {
                 new WorkItemFieldModifiedEvent<StateReason>(nameof(StateReason), StateReason),
@@ -144,12 +151,52 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             });
 
             if (state != WorkItemState.Closed) return;
-            
+
             var childrenWorkItemsIds =
-                _relatedWorks.Where(r => r.LinkType == LinkType.Child && r.WorkItemId.HasValue)
-                    .Select(r => r.WorkItemId.Value);
+                _relatedWorks.Where(r => r.LinkType == LinkType.Child && r.ReferencedWorkItemId.HasValue)
+                    .Select(r => r.ReferencedWorkItemId.Value);
 
             DomainEvents.Add(new WorkItemClosedEvent(Id, childrenWorkItemsIds));
+        }
+
+        public abstract class WorkItemBuilder<T> where T : WorkItem
+        {
+            protected T WorkItem;
+
+            public WorkItemBuilder<T> SetWorkItemOptionalFields(string description, Guid? assignedTo, Guid? iteration, Link repoLink)
+            {
+                WorkItem.Description = description;
+                WorkItem.AssignedTo = assignedTo;
+                WorkItem.Iteration = iteration;
+                WorkItem.RepoLink = repoLink;
+                return this;
+            }
+            
+            public WorkItemBuilder<T> AddComment(Comment comment)
+            {
+                WorkItem._comments.Add(comment);
+                return this;
+            }
+            
+            public WorkItemBuilder<T> AddTag(Tag tag)
+            {
+                WorkItem._tags.Add(tag);
+                return this;
+            }
+            
+            public WorkItemBuilder<T> AddAttachment(Attachment attachment)
+            {
+                WorkItem._attachments.Add(attachment);
+                return this;
+            }
+            
+            public WorkItemBuilder<T> AddRelatedWork(RelatedWork relatedWork)
+            {
+                WorkItem._relatedWorks.Add(relatedWork);
+                return this;
+            }
+
+            public abstract T BuildWorkItem();
         }
     }
 }

@@ -13,10 +13,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public Effort Effort { get; private set; }
         public string IntegratedInBuild { get; private set; }
 
-        private Task()
-        {
-        }
-
         public Task(string title, Guid area, Activity activity, Effort effort, string integratedInBuild,
             Priority priority = Priority.Medium) : base(title, area, priority)
         {

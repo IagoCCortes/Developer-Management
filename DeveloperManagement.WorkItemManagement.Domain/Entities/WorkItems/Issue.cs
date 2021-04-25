@@ -10,10 +10,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public int? StackRank { get; private set; }
         public DateTime? DueDate { get; private set; }
 
-        private Issue()
-        {
-        }
-
         public Issue(string title, Guid area, int? stackRank, DateTime? dueDate, Priority priority = Priority.Medium) :
             base(title, area, priority)
         {

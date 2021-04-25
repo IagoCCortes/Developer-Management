@@ -14,10 +14,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public Priority? Risk { get; private set; }
         public ValueArea ValueArea { get; private set; }
 
-        private Feature()
-        {
-        }
-
         public Feature(string title, Guid area, byte? effort, byte? businessValue, byte? timeCriticality,
             DateTime? startDate, DateTime? targetDate, Priority? risk, ValueArea valueArea = ValueArea.Business,
             Priority priority = Priority.Medium) : base(title, area, priority)

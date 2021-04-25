@@ -8,8 +8,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.ValueObjects
         public byte OriginalEstimate { get; private set; }
         public byte Remaining { get; private set; }
         public byte Completed { get; private set; }
-
-        private Effort() {}
+        
         public Effort(byte originalEstimate, byte remaining, byte completed)
         {
             OriginalEstimate = originalEstimate;

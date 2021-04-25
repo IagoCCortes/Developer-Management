@@ -7,10 +7,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.ValueObjects
     {
         public string Hyperlink { get; private set; }
 
-        private Link()
-        {
-        }
-
         public Link(string hyperlink)
         {
             Hyperlink = hyperlink;

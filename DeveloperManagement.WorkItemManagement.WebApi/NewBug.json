@@ -1,0 +1,40 @@
+﻿{
+  "title": "West wing",
+  "assignedTo": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "stateReasonId": 18,
+  "areaId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "description": "Sometimes I fell like throwing my hands",
+  "priorityId": 3,
+  "repoLink": "www.asd.com/54",
+  "comments": [
+    "Pero",
+    "Si tú no quieres"
+  ],
+  "tags": [
+    "hard",
+    "damn"
+  ],
+  "attachments": [
+    {
+      "path": "d/cde",
+      "fileName": "xvd.pdf"
+    }
+  ],
+  "relatedWorks": [
+    {
+      "linkTypeId": 2,
+      "comment": "Something",
+      "workItemId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    },
+    {
+      "linkTypeId": 1,
+      "url": "www.github/IagoCCortes",
+      "comment": "Something"
+    }
+  ],
+  "originalEstimate": 24,
+  "remaining": 24,
+  "completed": 0,
+  "storyPoints": 7,
+  "severityId": 4
+}
