@@ -21,7 +21,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public Guid Area { get; private set; }
         public Guid? Iteration { get; private set; }
         public string Description { get; private set; }
-        public Priority Priority { get; private set; }
+        public Priority Priority { get; protected set; }
         public Link RepoLink { get; private set; }
         private readonly List<Comment> _comments;
         public ReadOnlyCollection<Comment> Comments => _comments.AsReadOnly();
@@ -123,7 +123,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         {
             if (relatedWork.ReferencedWorkItemId.HasValue && relatedWork.ReferencedWorkItemId.Value == Id)
                 throw new DomainException(nameof(RelatedWorks),
-                    "A work item's relatedWork must not be reference itself");
+                    "A work item cannot be related to itself");
             if (relatedWork == null)
                 throw new DomainException(nameof(RelatedWorks), "A relatedWork must not be null");
 
@@ -144,11 +144,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         {
             State = state;
 
-            DomainEvents.AddRange(new DomainEvent[]
-            {
-                new WorkItemFieldModifiedEvent<StateReason>(nameof(StateReason), StateReason),
-                new WorkItemFieldModifiedEvent<WorkItemState>(nameof(State), state)
-            });
+            DomainEvents.Add(new WorkItemStateModified(state, StateReason));
 
             if (state != WorkItemState.Closed) return;
 
@@ -156,7 +152,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 _relatedWorks.Where(r => r.LinkType == LinkType.Child && r.ReferencedWorkItemId.HasValue)
                     .Select(r => r.ReferencedWorkItemId.Value);
 
-            DomainEvents.Add(new WorkItemClosedEvent(Id, childrenWorkItemsIds));
+            DomainEvents.Add(new WorkItemClosedEvent(Id, childrenWorkItemsIds, this.GetType().Name));
         }
 
         public abstract class WorkItemBuilder<T> where T : WorkItem

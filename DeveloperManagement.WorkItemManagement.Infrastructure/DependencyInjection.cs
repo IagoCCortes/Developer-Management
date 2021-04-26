@@ -1,4 +1,5 @@
-﻿using DeveloperManagement.Core.Application.Interfaces;
+﻿using Autofac;
+using DeveloperManagement.Core.Application.Interfaces;
 using DeveloperManagement.Core.Domain.Interfaces;
 using DeveloperManagement.WorkItemManagement.Application.Interfaces;
 using DeveloperManagement.WorkItemManagement.Domain.Interfaces;
@@ -18,6 +19,9 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure
         {
             var connectionString = configuration.GetSection("DapperSettings").GetSection("ConnectionString").Value;
             services.AddSingleton<IDapperConnectionFactory>(new DapperConnectionFactory(connectionString));
+            // var builder = new ContainerBuilder();
+            // builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().UsingConstructor(typeof(IDapperConnectionFactory),
+            //     typeof(IDomainEventService), typeof(ICurrentUserService), typeof(IDateTime));
             services.AddScoped<IUnitOfWork>(provider => new UnitOfWork(
                 provider.GetRequiredService<IDapperConnectionFactory>(),
                 provider.GetRequiredService<IDomainEventService>(),

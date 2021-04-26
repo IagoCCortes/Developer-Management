@@ -13,6 +13,8 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public string IntegratedInBuild { get; private set; }
         public byte? StoryPoints { get; private set; }
         public Priority Severity { get; private set; }
+        public Activity? Activity { get; private set; }
+        public string ReproSteps { get; private set; }
         public string SystemInfo { get; private set; }
         public string FoundInBuild { get; private set; }
 
@@ -30,54 +32,36 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             Severity = severity;
         }
 
+        public void ModifyPlanning(byte? storyPoints, Priority priority, Priority severity, Activity? activity)
+        {
+            StoryPoints = storyPoints;
+            Priority = priority;
+            Severity = severity;
+            Activity = activity;
+            
+            DomainEvents.Add(new BugPlanningModifiedEvent(priority, storyPoints, severity, activity));
+        }
+        
+        public void SpecifyBugInfo(string reproSteps, string systemInfo, string foundInBuild, string integratedInBuild)
+        {
+            ReproSteps = reproSteps;
+            SystemInfo = systemInfo;
+            FoundInBuild = foundInBuild;
+            IntegratedInBuild = integratedInBuild;
+            DomainEvents.Add(new BugInfoModifiedEvent(reproSteps, systemInfo, foundInBuild, integratedInBuild));
+        }
+        
+        public void ModifyEffort(Effort effort)
+        {
+            Effort = effort;
+            DomainEvents.Add(new BugEffortModifiedEvent(effort));
+        }
+
         public void ModifyState(WorkItemState state, StateReason stateReason)
         {
             ValidateStateAndStateReason(state, stateReason);
             StateReason = stateReason;
             base.ModifyState(state);
-        }
-
-        public void ModifyStateReason(StateReason stateReason)
-        {
-            ValidateStateAndStateReason(State, stateReason);
-            StateReason = stateReason;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<StateReason>(nameof(StateReason), stateReason));
-        }
-
-        public void ModifyEffort(Effort effort)
-        {
-            Effort = effort;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<Effort>(nameof(Effort), effort));
-        }
-
-        public void ModifyIntegratedInBuild(string integratedInBuild)
-        {
-            IntegratedInBuild = integratedInBuild;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(IntegratedInBuild), integratedInBuild));
-        }
-
-        public void ModifyStoryPoints(byte? points)
-        {
-            StoryPoints = points;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<byte?>(nameof(StoryPoints), points));
-        }
-
-        public void ModifySeverity(Priority severity)
-        {
-            Severity = severity;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<Priority>(nameof(Severity), severity));
-        }
-
-        public void ModifyFoundInBuild(string foundInBuild)
-        {
-            FoundInBuild = foundInBuild;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(FoundInBuild), foundInBuild));
-        }
-
-        public void ModifySystemInfo(string systemInfo)
-        {
-            SystemInfo = systemInfo;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(SystemInfo), systemInfo));
         }
 
         private void ValidateStateAndStateReason(WorkItemState state, StateReason stateReason)

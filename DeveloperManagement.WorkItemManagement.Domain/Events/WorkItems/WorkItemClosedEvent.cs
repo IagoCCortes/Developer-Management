@@ -8,11 +8,13 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
     {
         public Guid WorkItemId { get; }
         public IEnumerable<Guid> ChildrenWorkItems { get; }
+        public string WorkItemType { get; }
 
-        public WorkItemClosedEvent(Guid workItemId, IEnumerable<Guid> childrenWorkItems)
+        public WorkItemClosedEvent(Guid workItemId, IEnumerable<Guid> childrenWorkItems, string workItemType)
         {
             WorkItemId = workItemId;
             ChildrenWorkItems = childrenWorkItems;
+            WorkItemType = workItemType;
         }
     }
 }
