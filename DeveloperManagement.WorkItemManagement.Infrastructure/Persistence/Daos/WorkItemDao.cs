@@ -38,7 +38,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
         }
 
         public static void PopulateBaseWorkItem(WorkItem workItem, WorkItemDao dao, List<TagDao> tags, List<CommentDao> comments,
-            List<AttachmentDao> attachments)
+            List<AttachmentDao> attachments, List<RelatedWorkDao> relatedWorkDaos)
         {
             var type = typeof(WorkItem);
             type.GetProperty("Id").SetValue(workItem, dao.Id);
@@ -48,7 +48,10 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
             type.GetProperty("Iteration").SetValue(workItem, dao.IterationId);
             type.GetProperty("Description").SetValue(workItem, dao.Description);
             type.GetProperty("Priority").SetValue(workItem, (Priority) dao.PriorityId);
-            type.GetProperty("RepoLink").SetValue(workItem, new Link(dao.RepoLink));
+            if (!string.IsNullOrWhiteSpace(dao.RepoLink))
+            {
+                type.GetProperty("RepoLink").SetValue(workItem, new Link(dao.RepoLink));
+            }
             type.GetProperty("StateReason").SetValue(workItem, (StateReason) dao.StateReasonId);
             type.GetProperty("_tags", BindingFlags.NonPublic)
                 .SetValue(workItem, tags.Select(t => t.ToTag()));
@@ -56,8 +59,8 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
                 .SetValue(workItem, comments.Select(c => c.ToComment()));
             type.GetProperty("_attachments", BindingFlags.NonPublic)
                 .SetValue(workItem, attachments.Select(a => a.ToAttachment()));
+            type.GetProperty("_relatedWorks", BindingFlags.NonPublic)
+                .SetValue(workItem, relatedWorkDaos.Select(r => r.ToRelatedWork()));
         }
-
-        // private readonly List<RelatedWork> _relatedWorks;
     }
 }

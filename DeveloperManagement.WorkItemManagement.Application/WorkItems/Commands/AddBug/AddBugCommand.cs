@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using DeveloperManagement.Core.Application.Interfaces;
 using DeveloperManagement.WorkItemManagement.Application.Dtos;
 using DeveloperManagement.WorkItemManagement.Application.Interfaces;
@@ -42,14 +41,12 @@ namespace DeveloperManagement.WorkItemManagement.Application.WorkItems.Commands.
     public class AddBugCommandHandler : IRequestHandler<AddBugCommand, Guid>
     {
         private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
         private readonly IDateTime _dateTime;
         private readonly IMimeTypeMapper _mimeTypeMapper;
 
-        public AddBugCommandHandler(IUnitOfWork uow, IMapper mapper, IDateTime dateTime, IMimeTypeMapper mimeTypeMapper)
+        public AddBugCommandHandler(IUnitOfWork uow, IDateTime dateTime, IMimeTypeMapper mimeTypeMapper)
         {
             _uow = uow;
-            _mapper = mapper;
             _dateTime = dateTime;
             _mimeTypeMapper = mimeTypeMapper;
         }
@@ -75,7 +72,7 @@ namespace DeveloperManagement.WorkItemManagement.Application.WorkItems.Commands.
                 builder.AddAttachment(dto.ToAttachment(_mimeTypeMapper.GetMimeType(dto.FileName), now));
 
             foreach (var comment in request.Comments)
-                builder.AddComment(new Comment(comment, now));
+                builder.AddComment(new Comment(comment));
 
             foreach (var tag in request.Tags)
                 builder.AddTag(new Tag(tag));

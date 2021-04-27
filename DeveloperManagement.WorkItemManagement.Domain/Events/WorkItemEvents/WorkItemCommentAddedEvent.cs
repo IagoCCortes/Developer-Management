@@ -7,15 +7,11 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItemEvents
     public class WorkItemCommentAddedEvent : DomainEvent
     {
         public string Text { get; set; }
-        public DateTime CommentedAt { get; set; }
-        public string CommentedBy { get; set; }
         public string WorkItemType { get; set; }
 
-        public WorkItemCommentAddedEvent(Comment comment, string workItemType)
+        public WorkItemCommentAddedEvent(string comment, string workItemType)
         {
-            Text = comment.Text;
-            CommentedAt = comment.CommentedAt;
-            CommentedBy = comment.CommentedBy;
+            Text = comment;
             WorkItemType = workItemType;
         }
     }

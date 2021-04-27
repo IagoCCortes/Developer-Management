@@ -10,6 +10,6 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
         public string Text { get; set; }
         public Guid WorkItemId { get; set; }
         
-        public Comment ToComment() => new Comment(Text, Created);
+        public Comment ToComment() => new Comment(Text);
     }
 }

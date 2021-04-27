@@ -85,7 +85,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(Comments), "A comment may not be empty");
 
             _comments.Add(comment);
-            DomainEvents.Add(new WorkItemCommentAddedEvent(comment, this.GetType().Name));
+            DomainEvents.Add(new WorkItemCommentAddedEvent(comment.Text, this.GetType().Name));
         }
 
         public void AddTag(Tag tag)

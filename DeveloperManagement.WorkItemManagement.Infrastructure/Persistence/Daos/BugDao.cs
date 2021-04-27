@@ -18,6 +18,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
         public string IntegratedInBuild { get; set; }
         public byte? StoryPoints { get; set; }
         public byte SeverityId { get; set; }
+        public byte? ActivityId { get; set; }
         public string SystemInfo { get; set; }
         public string FoundInBuild { get; set; }
 
@@ -30,21 +31,23 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
             IntegratedInBuild = bug.IntegratedInBuild;
             StoryPoints = bug.StoryPoints;
             SeverityId = (byte) bug.Severity;
+            ActivityId = (byte?) bug.Activity;
             SystemInfo = bug.SystemInfo;
             FoundInBuild = bug.FoundInBuild;
         }
 
         public Bug ToBug(WorkItemDao workItemDao, List<TagDao> tags, List<CommentDao> comments,
-            List<AttachmentDao> attachments)
+            List<AttachmentDao> attachments, List<RelatedWorkDao> relatedWorkDaos)
         {
             var type = typeof(Bug);
-            var bug = (Bug)Activator.CreateInstance(type, BindingFlags.NonPublic);
-            WorkItemDao.PopulateBaseWorkItem(bug, workItemDao, tags, comments, attachments);
+            var bug = (Bug) Activator.CreateInstance(type, BindingFlags.NonPublic);
+            WorkItemDao.PopulateBaseWorkItem(bug, workItemDao, tags, comments, attachments, relatedWorkDaos);
             if (EffortOriginalEstimate.HasValue)
-                type.GetProperty("Effort").SetValue(bug, new Effort(EffortOriginalEstimate.Value, EffortRemaining!.Value, EffortCompleted!.Value));
+                type.GetProperty("Effort").SetValue(bug,
+                    new Effort(EffortOriginalEstimate.Value, EffortRemaining!.Value, EffortCompleted!.Value));
             type.GetProperty("IntegratedInBuild").SetValue(bug, IntegratedInBuild);
             type.GetProperty("StoryPoints").SetValue(bug, StoryPoints);
-            type.GetProperty("Severity").SetValue(bug, (Priority)SeverityId);
+            type.GetProperty("Severity").SetValue(bug, (Priority) SeverityId);
             type.GetProperty("SystemInfo").SetValue(bug, SystemInfo);
             type.GetProperty("FoundInBuild").SetValue(bug, FoundInBuild);
 
