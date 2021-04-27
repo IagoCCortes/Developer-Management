@@ -1,17 +1,15 @@
-﻿using System;
-using DeveloperManagement.Core.Domain;
-using DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems;
+﻿using DeveloperManagement.Core.Domain;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
-namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
+namespace DeveloperManagement.WorkItemManagement.Domain.Events.Feature
 {
     public class FeatureCreatedEvent : DomainEvent
     {
         public Planning Planning { get; private set; }
         public ValueArea ValueArea { get; private set; }
 
-        public FeatureCreatedEvent(Feature feature)
+        public FeatureCreatedEvent(Entities.WorkItems.Feature feature)
         {
             Planning = feature.Planning;
             ValueArea = feature.ValueArea;

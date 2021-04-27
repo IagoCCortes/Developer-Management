@@ -1,5 +1,6 @@
 ﻿using System;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Events.Feature;
 using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 

@@ -1,6 +1,6 @@
 ﻿using DeveloperManagement.Core.Domain;
 
-namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
+namespace DeveloperManagement.WorkItemManagement.Domain.Events.Bug
 {
     public class BugInfoModifiedEvent : DomainEvent
     {

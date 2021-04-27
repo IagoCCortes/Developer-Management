@@ -1,10 +1,8 @@
-﻿using System;
-using DeveloperManagement.Core.Domain;
-using DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems;
+﻿using DeveloperManagement.Core.Domain;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
-namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
+namespace DeveloperManagement.WorkItemManagement.Domain.Events.Bug
 {
     public class BugCreatedEvent : DomainEvent
     {
@@ -15,7 +13,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
         public string SystemInfo { get; }
         public string FoundInBuild { get; }
 
-        public BugCreatedEvent(Bug bug)
+        public BugCreatedEvent(Entities.WorkItems.Bug bug)
         {
             Effort = bug.Effort;
             IntegratedInBuild = bug.IntegratedInBuild;
