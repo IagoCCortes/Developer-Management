@@ -1,7 +1,7 @@
 ﻿using System;
 using DeveloperManagement.Core.Domain;
 
-namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
+namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItemEvents
 {
     public class WorkItemIterationModifiedEvent : DomainEvent
     {

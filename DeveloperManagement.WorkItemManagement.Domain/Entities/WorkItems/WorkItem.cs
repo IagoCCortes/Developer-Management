@@ -5,7 +5,7 @@ using System.Linq;
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.Core.Domain.Interfaces;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
-using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
+using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItemEvents;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
 namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
@@ -70,7 +70,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(Area), "Invalid area identifier");
 
             Area = area;
-            DomainEvents.Add(new WorkItemAReaModifiedEvent(area, this.GetType().Name));
+            DomainEvents.Add(new WorkItemAreaModifiedEvent(area, this.GetType().Name));
         }
 
         public void ModifyIteration(Guid? iteration)
@@ -85,7 +85,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(Comments), "A comment may not be empty");
 
             _comments.Add(comment);
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<Comment>(nameof(Comments), comment));
+            DomainEvents.Add(new WorkItemCommentAddedEvent(comment, this.GetType().Name));
         }
 
         public void AddTag(Tag tag)
@@ -94,7 +94,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(Tags), "A tag may not be empty");
 
             _tags.Add(tag);
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<Tag>(nameof(Tags), tag));
+            DomainEvents.Add(new WorkItemTagAddedEvent(tag, this.GetType().Name));
         }
 
         public void AddAttachment(Attachment attachment)
@@ -103,7 +103,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(Attachments), "An attachment may not be empty");
 
             _attachments.Add(attachment);
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<Attachment>(nameof(Attachments), attachment));
+            DomainEvents.Add(new WorkItemAttachmentAddedEvent(attachment, this.GetType().Name));
         }
 
         public void AddRelatedWork(RelatedWork relatedWork)
@@ -115,8 +115,10 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(RelatedWorks), "A relatedWork must not be null");
 
             _relatedWorks.Add(relatedWork);
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<RelatedWork>(nameof(RelatedWorks), relatedWork));
+            DomainEvents.Add(new WorkItemRelatedWorkAddedEvent(relatedWork, this.GetType().Name));
         }
+        
+        public void RemoveRelatedWork(){}
 
         public void AssignToMember(Guid memberId)
         {
@@ -124,7 +126,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(AssignedTo), "A member must be provided");
 
             AssignedTo = memberId;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<Guid>(nameof(AssignedTo), memberId));
+            DomainEvents.Add(new WorkItemAssignedToModifiedEvent(memberId, this.GetType().Name));
         }
 
         public virtual void ModifyState(WorkItemState state)

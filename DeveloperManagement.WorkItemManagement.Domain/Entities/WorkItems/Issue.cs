@@ -2,7 +2,6 @@
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
 using DeveloperManagement.WorkItemManagement.Domain.Events.IssueEvents;
-using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
 
 namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
 {
