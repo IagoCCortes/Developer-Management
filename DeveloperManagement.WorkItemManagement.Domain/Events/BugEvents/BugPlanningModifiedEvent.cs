@@ -1,7 +1,7 @@
 ﻿using DeveloperManagement.Core.Domain;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
 
-namespace DeveloperManagement.WorkItemManagement.Domain.Events.Bug
+namespace DeveloperManagement.WorkItemManagement.Domain.Events.BugEvents
 {
     public class BugPlanningModifiedEvent : DomainEvent
     {

@@ -2,7 +2,7 @@
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
 
-namespace DeveloperManagement.WorkItemManagement.Domain.Events.Issue
+namespace DeveloperManagement.WorkItemManagement.Domain.Events.IssueEvents
 {
     public class IssuePlanningModifiedEvent : DomainEvent
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
-using DeveloperManagement.WorkItemManagement.Domain.Events.Issue;
+using DeveloperManagement.WorkItemManagement.Domain.Events.IssueEvents;
 using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
 
 namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
@@ -11,7 +11,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public int? StackRank { get; private set; }
         public DateTime? DueDate { get; private set; }
 
-        public Issue(string title, Guid area, Priority priority) : base(title, area, priority)
+        private Issue(string title, Guid area, Priority priority) : base(title, area, priority)
         {
             State = WorkItemState.Active;
             StateReason = StateReason.New;

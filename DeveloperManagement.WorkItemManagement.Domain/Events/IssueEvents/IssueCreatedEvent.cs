@@ -1,7 +1,7 @@
 ﻿using System;
 using DeveloperManagement.Core.Domain;
 
-namespace DeveloperManagement.WorkItemManagement.Domain.Events.Issue
+namespace DeveloperManagement.WorkItemManagement.Domain.Events.IssueEvents
 {
     public class IssueCreatedEvent : DomainEvent
     {

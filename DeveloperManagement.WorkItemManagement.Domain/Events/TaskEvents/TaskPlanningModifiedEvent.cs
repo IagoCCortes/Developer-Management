@@ -1,7 +1,7 @@
 ﻿using DeveloperManagement.Core.Domain;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
 
-namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
+namespace DeveloperManagement.WorkItemManagement.Domain.Events.TaskEvents
 {
     public class TaskPlanningModifiedEvent : DomainEvent
     {

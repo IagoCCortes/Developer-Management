@@ -2,7 +2,7 @@
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
-namespace DeveloperManagement.WorkItemManagement.Domain.Events.Bug
+namespace DeveloperManagement.WorkItemManagement.Domain.Events.BugEvents
 {
     public class BugCreatedEvent : DomainEvent
     {

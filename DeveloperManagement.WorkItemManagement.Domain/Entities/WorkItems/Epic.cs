@@ -1,6 +1,6 @@
 ﻿using System;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
-using DeveloperManagement.WorkItemManagement.Domain.Events.Epic;
+using DeveloperManagement.WorkItemManagement.Domain.Events.EpicEvents;
 using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
@@ -11,7 +11,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public Planning Planning { get; private set; }
         public ValueArea ValueArea { get; private set; }
 
-        public Epic(string title, Guid area, ValueArea valueArea, Priority priority) : base(title, area, priority)
+        private Epic(string title, Guid area, ValueArea valueArea, Priority priority) : base(title, area, priority)
         {
             State = WorkItemState.New;
             StateReason = StateReason.AddedToBacklog;

@@ -1,6 +1,6 @@
 ﻿using System;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
-using DeveloperManagement.WorkItemManagement.Domain.Events.Feature;
+using DeveloperManagement.WorkItemManagement.Domain.Events.FeatureEvents;
 using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
@@ -11,7 +11,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public Planning Planning { get; private set; }
         public ValueArea ValueArea { get; private set; }
 
-        public Feature(string title, Guid area, ValueArea valueArea, Priority priority) : base(title, area, priority)
+        private Feature(string title, Guid area, ValueArea valueArea, Priority priority) : base(title, area, priority)
         {
             State = WorkItemState.New;
             StateReason = StateReason.New;

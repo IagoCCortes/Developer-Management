@@ -3,9 +3,9 @@ using DeveloperManagement.Core.Domain;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
-namespace DeveloperManagement.WorkItemManagement.Domain.Events.Epic
+namespace DeveloperManagement.WorkItemManagement.Domain.Events.FeatureEvents
 {
-    public class EpicPlanningModifiedEvent : DomainEvent
+    public class FeaturePlanningModifiedEvent : DomainEvent
     {
         public Priority Priority { get; set; }
         public byte? Effort { get; set; }
@@ -15,7 +15,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.Epic
         public DateTime? TargetDate { get; set; }
         public Priority? Risk { get; set; }
 
-        public EpicPlanningModifiedEvent(Planning planning, Priority priority)
+        public FeaturePlanningModifiedEvent(Planning planning, Priority priority)
         {
             Priority = priority;
             Effort = planning.Effort;

@@ -3,7 +3,7 @@ using DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
-namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
+namespace DeveloperManagement.WorkItemManagement.Domain.Events.TaskEvents
 {
     public class TaskCreatedEvent : DomainEvent
     {

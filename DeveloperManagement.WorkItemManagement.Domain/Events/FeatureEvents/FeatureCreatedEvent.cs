@@ -2,17 +2,17 @@
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
-namespace DeveloperManagement.WorkItemManagement.Domain.Events.Epic
+namespace DeveloperManagement.WorkItemManagement.Domain.Events.FeatureEvents
 {
-    public class EpicCreatedEvent : DomainEvent
+    public class FeatureCreatedEvent : DomainEvent
     {
         public Planning Planning { get; private set; }
         public ValueArea ValueArea { get; private set; }
 
-        public EpicCreatedEvent(Entities.WorkItems.Epic epic)
+        public FeatureCreatedEvent(Entities.WorkItems.Feature feature)
         {
-            Planning = epic.Planning;
-            ValueArea = epic.ValueArea;
+            Planning = feature.Planning;
+            ValueArea = feature.ValueArea;
         }
     }
 }

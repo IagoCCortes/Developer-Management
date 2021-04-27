@@ -1,6 +1,6 @@
 ﻿using DeveloperManagement.Core.Domain;
 
-namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
+namespace DeveloperManagement.WorkItemManagement.Domain.Events.TaskEvents
 {
     public class TaskInfoModifiedEvent : DomainEvent
     {

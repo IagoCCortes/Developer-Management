@@ -1,6 +1,8 @@
 ﻿using System;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Events.UserStoryEvents;
 using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
+using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
 namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
 {
@@ -11,14 +13,11 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public string AcceptanceCriteria { get; private set; }
         public ValueArea ValueArea { get; private set; }
 
-        public UserStory(string title, Guid area, byte? storyPoints, Priority? risk, string acceptanceCriteria,
-            ValueArea valueArea = ValueArea.Business, Priority priority = Priority.Medium) : base(title, area, priority)
+        private UserStory(string title, Guid area, ValueArea valueArea = ValueArea.Business,
+            Priority priority = Priority.Medium) : base(title, area, priority)
         {
             State = WorkItemState.New;
             StateReason = StateReason.New;
-            StoryPoints = storyPoints;
-            Risk = risk;
-            AcceptanceCriteria = acceptanceCriteria;
             ValueArea = valueArea;
         }
 
@@ -28,28 +27,22 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             base.ModifyState(state);
         }
 
-        public void ModifyStoryPoints(byte? points)
+        public void ModifyPlanning(Priority priority, byte? storyPoints, Priority? risk)
         {
-            StoryPoints = points;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<byte?>(nameof(StoryPoints), points));
-        }
-
-        public void ModifyRisk(Priority? risk)
-        {
+            Priority = priority;
+            StoryPoints = storyPoints;
             Risk = risk;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<Priority?>(nameof(Risk), risk));
+
+            DomainEvents.Add(new UserStoryPlanningModifiedEvent(priority, storyPoints, risk));
         }
 
-        public void ModifyAcceptanceCriteria(string criteria)
+        public void SpecifyUserStoryInfo(string description, string acceptanceCriteria, ValueArea valueArea)
         {
-            AcceptanceCriteria = criteria;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(AcceptanceCriteria), criteria));
-        }
-
-        public void ModifyValueArea(ValueArea valueArea)
-        {
+            Description = description;
+            AcceptanceCriteria = acceptanceCriteria;
             ValueArea = valueArea;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<ValueArea>(nameof(ValueArea), valueArea));
+
+            DomainEvents.Add(new UserStoryInfoModifiedEvent(description, acceptanceCriteria, valueArea));
         }
 
         private StateReason SetStateReason(WorkItemState state)
@@ -61,5 +54,25 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 WorkItemState.Closed => StateReason.AcceptanceTestsPass,
                 WorkItemState.Removed => StateReason.RemovedFromTheBacklog,
             };
+
+        public class UserStoryBuilder : WorkItemBuilder<UserStory>
+        {
+            public UserStoryBuilder(string title, Guid area, ValueArea valueArea = ValueArea.Business,
+                Priority priority = Priority.Medium) => WorkItem = new UserStory(title, area, valueArea, priority);
+
+            public UserStoryBuilder SetUserStoryOptionalFields(byte? storyPoints, Priority? risk, string acceptanceCriteria)
+            {
+                WorkItem.StoryPoints = storyPoints;
+                WorkItem.Risk = risk;
+                WorkItem.AcceptanceCriteria = acceptanceCriteria;
+                return this;
+            }
+
+            public override UserStory BuildWorkItem()
+            {
+                WorkItem.DomainEvents.Add(new UserStoryCreatedEvent(WorkItem));
+                return WorkItem;
+            }
+        }
     }
 }

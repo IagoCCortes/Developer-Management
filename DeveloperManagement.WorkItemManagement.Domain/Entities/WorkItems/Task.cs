@@ -2,6 +2,7 @@
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.Core.Domain.Extensions;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Events.TaskEvents;
 using DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
@@ -13,7 +14,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public Effort Effort { get; private set; }
         public string IntegratedInBuild { get; private set; }
 
-        public Task(string title, Guid area, Priority priority) : base(title, area, priority)
+        private Task(string title, Guid area, Priority priority) : base(title, area, priority)
         {
             State = WorkItemState.New;
             StateReason = StateReason.New;
