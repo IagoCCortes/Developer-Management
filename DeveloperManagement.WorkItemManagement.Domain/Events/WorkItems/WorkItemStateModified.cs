@@ -7,11 +7,13 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
     {
         public WorkItemState State { get; set; }
         public StateReason StateReason { get; set; }
+        public string WorkItemType { get; set; }
 
-        public WorkItemStateModified(WorkItemState state, StateReason stateReason)
+        public WorkItemStateModified(WorkItemState state, StateReason stateReason, string workItemType)
         {
             State = state;
             StateReason = stateReason;
+            WorkItemType = workItemType;
         }
     }
 }

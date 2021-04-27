@@ -1,27 +1,19 @@
 ﻿using System;
+using DeveloperManagement.Core.Domain;
 using DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 
 namespace DeveloperManagement.WorkItemManagement.Domain.Events.WorkItems
 {
-    public class EpicCreatedEvent
+    public class EpicCreatedEvent : DomainEvent
     {
-        public byte? Effort { get; }
-        public byte? BusinessValue { get; }
-        public byte? TimeCriticality { get; }
-        public DateTime? StartDate { get; }
-        public DateTime? TargetDate { get; }
-        public Priority? Risk { get; }
-        public ValueArea ValueArea { get; }
+        public Planning Planning { get; private set; }
+        public ValueArea ValueArea { get; private set; }
 
         public EpicCreatedEvent(Epic epic)
         {
-            Effort = epic.Effort;
-            BusinessValue = epic.BusinessValue;
-            TimeCriticality = epic.TimeCriticality;
-            StartDate = epic.StartDate;
-            TargetDate = epic.TargetDate;
-            Risk = epic.Risk;
+            Planning = epic.Planning;
             ValueArea = epic.ValueArea;
         }
     }

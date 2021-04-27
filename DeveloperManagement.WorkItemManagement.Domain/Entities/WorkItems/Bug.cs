@@ -14,7 +14,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public byte? StoryPoints { get; private set; }
         public Priority Severity { get; private set; }
         public Activity? Activity { get; private set; }
-        public string ReproSteps { get; private set; }
         public string SystemInfo { get; private set; }
         public string FoundInBuild { get; private set; }
 
@@ -42,13 +41,13 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             DomainEvents.Add(new BugPlanningModifiedEvent(priority, storyPoints, severity, activity));
         }
         
-        public void SpecifyBugInfo(string reproSteps, string systemInfo, string foundInBuild, string integratedInBuild)
+        public void SpecifyBugInfo(string description, string systemInfo, string foundInBuild, string integratedInBuild)
         {
-            ReproSteps = reproSteps;
+            Description = description;
             SystemInfo = systemInfo;
             FoundInBuild = foundInBuild;
             IntegratedInBuild = integratedInBuild;
-            DomainEvents.Add(new BugInfoModifiedEvent(reproSteps, systemInfo, foundInBuild, integratedInBuild));
+            DomainEvents.Add(new BugInfoModifiedEvent(description, systemInfo, foundInBuild, integratedInBuild));
         }
         
         public void ModifyEffort(Effort effort)
@@ -61,6 +60,10 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         {
             ValidateStateAndStateReason(state, stateReason);
             StateReason = stateReason;
+            
+            if (state == WorkItemState.Closed && Effort != null)
+                ModifyEffort(new Effort(Effort.OriginalEstimate, 0, (byte)(Effort.Completed + Effort.Remaining)));
+            
             base.ModifyState(state);
         }
 

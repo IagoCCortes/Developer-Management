@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.Core.Domain.Interfaces;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
@@ -20,7 +19,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public StateReason StateReason { get; protected set; }
         public Guid Area { get; private set; }
         public Guid? Iteration { get; private set; }
-        public string Description { get; private set; }
+        public string Description { get; protected set; }
         public Priority Priority { get; protected set; }
         public Link RepoLink { get; private set; }
         private readonly List<Comment> _comments;
@@ -53,13 +52,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public void ModifyRepoLink(Link repoLink)
         {
             RepoLink = repoLink;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<Link>(nameof(RepoLink), repoLink));
-        }
-
-        public void ModifyPriority(Priority priority)
-        {
-            Priority = priority;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<Priority>(nameof(Priority), priority));
+            DomainEvents.Add(new WorkItemRepoLinkModifiedEvent(repoLink.Hyperlink, this.GetType().Name));
         }
 
         public void ModifyTitle(string title)
@@ -68,7 +61,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(Title), "A work item must have a title");
 
             Title = title;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(Title), title));
+            DomainEvents.Add(new WorkItemTitleModifiedEvent(title, this.GetType().Name));
         }
 
         public void ModifyArea(Guid area)
@@ -77,19 +70,13 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 throw new DomainException(nameof(Area), "Invalid area identifier");
 
             Area = area;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<Guid>(nameof(Area), area));
+            DomainEvents.Add(new WorkItemAReaModifiedEvent(area, this.GetType().Name));
         }
 
         public void ModifyIteration(Guid? iteration)
         {
             Iteration = iteration;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<Guid?>(nameof(Iteration), iteration));
-        }
-
-        public void ModifyDescription(string description)
-        {
-            Description = description;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(Description), description));
+            DomainEvents.Add(new WorkItemIterationModifiedEvent(iteration, this.GetType().Name));
         }
 
         public void AddComment(Comment comment)
@@ -144,7 +131,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         {
             State = state;
 
-            DomainEvents.Add(new WorkItemStateModified(state, StateReason));
+            DomainEvents.Add(new WorkItemStateModified(state, StateReason, this.GetType().Name));
 
             if (state != WorkItemState.Closed) return;
 

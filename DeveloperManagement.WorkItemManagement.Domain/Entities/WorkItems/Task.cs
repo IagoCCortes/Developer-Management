@@ -13,48 +13,42 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public Effort Effort { get; private set; }
         public string IntegratedInBuild { get; private set; }
 
-        public Task(string title, Guid area, Activity activity, Effort effort, string integratedInBuild,
-            Priority priority = Priority.Medium) : base(title, area, priority)
+        public Task(string title, Guid area, Priority priority) : base(title, area, priority)
         {
             State = WorkItemState.New;
             StateReason = StateReason.New;
-            Activity = activity;
-            Effort = effort;
-            IntegratedInBuild = integratedInBuild;
         }
 
         public void ModifyState(WorkItemState state, StateReason stateReason)
         {
             ValidateStateAndStateReason(state, stateReason);
             StateReason = stateReason;
+            
+            if (state == WorkItemState.Closed && Effort != null)
+                ModifyEffort(new Effort(Effort.OriginalEstimate, 0, (byte)(Effort.Completed + Effort.Remaining)));
+            
             base.ModifyState(state);
-
-            // modify effort, when it is closed remaining hours should be added to completed and then set to 0
         }
-
-        public void ModifyStateReason(StateReason stateReason)
+        
+        public void ModifyPlanning(Priority priority, Activity? activity)
         {
-            ValidateStateAndStateReason(State, stateReason);
-            StateReason = stateReason;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<StateReason>(nameof(StateReason), stateReason));
-        }
-
-        public void ModifyActivity(Activity? activity)
-        {
+            Priority = priority;
             Activity = activity;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<Activity?>(nameof(Activity), activity));
+            
+            DomainEvents.Add(new TaskPlanningModifiedEvent(priority, activity));
         }
 
         public void ModifyEffort(Effort effort)
         {
             Effort = effort;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<Effort>(nameof(Effort), effort));
+            DomainEvents.Add(new TaskEffortModifiedEvent(effort));
         }
-
-        public void ModifyIntegratedInBuild(string integratedInBuild)
+        
+        public void SpecifyTaskInfo(string description, string integratedInBuild)
         {
+            Description = description;
             IntegratedInBuild = integratedInBuild;
-            DomainEvents.Add(new WorkItemFieldModifiedEvent<string>(nameof(IntegratedInBuild), integratedInBuild));
+            DomainEvents.Add(new TaskInfoModifiedEvent(description, integratedInBuild));
         }
 
         private static void ValidateStateAndStateReason(WorkItemState state, StateReason stateReason)
@@ -70,6 +64,28 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
 
             if (invalidNew || invalidActive || invalidClosed || invalidRemoved)
                 throw new DomainException(nameof(StateReason), "Invalid reason for current state");
+        }
+        
+        public class TaskBuilder : WorkItemBuilder<Task>
+        {
+            public TaskBuilder(string title, Guid area, Priority priority = Priority.Medium)
+            {
+                WorkItem = new Task(title, area, priority);
+            }
+
+            public TaskBuilder SetTaskOptionalFields(Activity? activity, Effort effort, string integratedInBuild)
+            {
+                WorkItem.Effort = effort;
+                WorkItem.IntegratedInBuild = integratedInBuild;
+                WorkItem.Activity = activity;
+                return this;
+            }
+
+            public override Task BuildWorkItem()
+            {
+                WorkItem.DomainEvents.Add(new TaskCreatedEvent(WorkItem));
+                return WorkItem;
+            }
         }
     }
 }
