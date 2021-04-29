@@ -18,13 +18,22 @@ namespace DeveloperManagement.WorkItemManagement.Application.Dtos
     
     public class AttachmentDtoValidations : AbstractValidator<AttachmentDto>
     {
-        public AttachmentDtoValidations()
+        public AttachmentDtoValidations Path()
+        {
+            RuleFor(r => r.Path).Must(p => !String.IsNullOrWhiteSpace(p))
+                .WithMessage("Path must not be empty");
+
+            return this;
+        }
+
+        public AttachmentDtoValidations Filename()
         {
             RuleFor(r => r.FileName).Must(f => !String.IsNullOrWhiteSpace(f))
                 .WithMessage("File name must not be empty").Must(f => f.TryGetExtension(out var _))
                 .WithMessage("File name does not contain an extension");
-            RuleFor(r => r.Path).Must(p => !String.IsNullOrWhiteSpace(p))
-                .WithMessage("Path must not be empty");
+            return this;
         }
+
+        public static AttachmentDtoValidations Validate() => new AttachmentDtoValidations();
     }
 }

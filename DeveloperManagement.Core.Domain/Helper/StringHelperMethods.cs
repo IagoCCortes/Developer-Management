@@ -7,7 +7,7 @@ namespace DeveloperManagement.Core.Domain.Helper
 {
     public static class StringHelperMethods
     {
-        private static string _extensionPattern = @".(\w+)$";
+        private static string _extensionPattern = @"\.(\w+)$";
         private static Regex _rgx = new Regex(_extensionPattern, RegexOptions.IgnoreCase);
         
         public static List<string> AreNullOrWhiteSpace(params (string field, string value)[] values)
