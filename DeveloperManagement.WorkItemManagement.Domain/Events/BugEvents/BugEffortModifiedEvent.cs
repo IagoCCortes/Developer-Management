@@ -5,9 +5,9 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.BugEvents
 {
     public class BugEffortModifiedEvent : DomainEvent
     {
-        public byte? OriginalEstimate { get; set; }
-        public byte? Remaining { get; set; }
-        public byte? Completed { get; set; }
+        public int? OriginalEstimate { get; set; }
+        public int? Remaining { get; set; }
+        public int? Completed { get; set; }
 
         public BugEffortModifiedEvent(Effort effort)
         {

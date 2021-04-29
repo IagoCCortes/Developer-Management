@@ -11,7 +11,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
     {
         public Effort Effort { get; private set; }
         public string IntegratedInBuild { get; private set; }
-        public byte? StoryPoints { get; private set; }
+        public int? StoryPoints { get; private set; }
         public Priority Severity { get; private set; }
         public Activity? Activity { get; private set; }
         public string SystemInfo { get; private set; }
@@ -31,7 +31,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             Severity = severity;
         }
 
-        public void ModifyPlanning(byte? storyPoints, Priority priority, Priority severity, Activity? activity)
+        public void ModifyPlanning(int? storyPoints, Priority priority, Priority severity, Activity? activity)
         {
             StoryPoints = storyPoints;
             Priority = priority;
@@ -62,7 +62,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             StateReason = stateReason;
             
             if (state == WorkItemState.Closed && Effort != null)
-                ModifyEffort(new Effort(Effort.OriginalEstimate, 0, (byte)(Effort.Completed + Effort.Remaining)));
+                ModifyEffort(new Effort(Effort.OriginalEstimate, 0, (Effort.Completed + Effort.Remaining)));
             
             base.ModifyState(state);
         }
@@ -97,7 +97,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
                 WorkItem = new Bug(title, area, priority, stateReason, severity);
             }
 
-            public BugBuilder SetBugOptionalFields(Effort effort, string integratedInBuild, byte? storyPoints,
+            public BugBuilder SetBugOptionalFields(Effort effort, string integratedInBuild, int? storyPoints,
                 string systemInfo, string foundInBuild)
             {
                 WorkItem.Effort = effort;

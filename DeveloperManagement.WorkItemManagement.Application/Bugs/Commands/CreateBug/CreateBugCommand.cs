@@ -11,47 +11,47 @@ using DeveloperManagement.WorkItemManagement.Domain.Interfaces;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
 using MediatR;
 
-namespace DeveloperManagement.WorkItemManagement.Application.WorkItems.Commands.AddBug
+namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.AddBug
 {
-    public class AddBugCommand : IRequest<Guid>
+    public class CreateBugCommand : IRequest<Guid>
     {
         public string Title { get; set; }
         public Guid? AssignedTo { get; set; }
-        public byte StateReasonId { get; set; }
+        public int StateReasonId { get; set; }
         public Guid AreaId { get; set; }
         public Guid? IterationId { get; set; }
         public string Description { get; set; }
-        public byte PriorityId { get; set; }
+        public int PriorityId { get; set; }
         public string RepoLink { get; set; }
         public IEnumerable<string> Comments { get; set; }
         public IEnumerable<string> Tags { get; set; }
         public IEnumerable<AttachmentDto> Attachments { get; set; }
         public IEnumerable<RelatedWorkDto> RelatedWorks { get; set; }
 
-        public byte? OriginalEstimate { get; set; }
-        public byte? Remaining { get; set; }
-        public byte? Completed { get; set; }
+        public int? OriginalEstimate { get; set; }
+        public int? Remaining { get; set; }
+        public int? Completed { get; set; }
         public string IntegratedInBuild { get; set; }
-        public byte? StoryPoints { get; set; }
-        public byte SeverityId { get; set; }
+        public int? StoryPoints { get; set; }
+        public int SeverityId { get; set; }
         public string SystemInfo { get; set; }
         public string FoundInBuild { get; set; }
     }
 
-    public class AddBugCommandHandler : IRequestHandler<AddBugCommand, Guid>
+    public class CreateBugCommandHandler : IRequestHandler<CreateBugCommand, Guid>
     {
         private readonly IUnitOfWork _uow;
         private readonly IDateTime _dateTime;
         private readonly IMimeTypeMapper _mimeTypeMapper;
 
-        public AddBugCommandHandler(IUnitOfWork uow, IDateTime dateTime, IMimeTypeMapper mimeTypeMapper)
+        public CreateBugCommandHandler(IUnitOfWork uow, IDateTime dateTime, IMimeTypeMapper mimeTypeMapper)
         {
             _uow = uow;
             _dateTime = dateTime;
             _mimeTypeMapper = mimeTypeMapper;
         }
 
-        public async Task<Guid> Handle(AddBugCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(CreateBugCommand request, CancellationToken cancellationToken)
         {
             var builder = new Bug.BugBuilder(request.Title, request.AreaId, (Priority) request.PriorityId,
                 (StateReason) request.StateReasonId, (Priority) request.SeverityId);
@@ -79,7 +79,7 @@ namespace DeveloperManagement.WorkItemManagement.Application.WorkItems.Commands.
 
             var bug = builder.BuildWorkItem();
 
-            _uow.WorkItemRepository.Insert(bug);
+            _uow.BugRepository.Insert(bug);
             await _uow.SaveChangesAsync();
             return bug.Id;
         }

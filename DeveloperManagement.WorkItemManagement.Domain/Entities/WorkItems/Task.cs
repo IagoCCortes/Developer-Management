@@ -25,7 +25,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             StateReason = stateReason;
             
             if (state == WorkItemState.Closed && Effort != null)
-                ModifyEffort(new Effort(Effort.OriginalEstimate, 0, (byte)(Effort.Completed + Effort.Remaining)));
+                ModifyEffort(new Effort(Effort.OriginalEstimate, 0, Effort.Completed + Effort.Remaining));
             
             base.ModifyState(state);
         }

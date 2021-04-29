@@ -8,9 +8,9 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.EpicEvents
     public class EpicPlanningModifiedEvent : DomainEvent
     {
         public Priority Priority { get; set; }
-        public byte? Effort { get; set; }
-        public byte? BusinessValue { get; set; }
-        public byte? TimeCriticality { get; set; }
+        public int? Effort { get; set; }
+        public int? BusinessValue { get; set; }
+        public int? TimeCriticality { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? TargetDate { get; set; }
         public Priority? Risk { get; set; }

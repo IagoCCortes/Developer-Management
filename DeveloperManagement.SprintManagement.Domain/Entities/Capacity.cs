@@ -10,11 +10,11 @@ namespace DeveloperManagement.SprintManagement.Domain.Entities
     public class Capacity : Entity
     {
         public Activity Activity { get; private set; }
-        public byte CapacityPerDay { get; private set; }
+        public int CapacityPerDay { get; private set; }
         private readonly List<Period> _daysOff;
         public ReadOnlyCollection<Period> DaysOff => _daysOff.AsReadOnly();
 
-        public Capacity(Guid id, Activity activity = Activity.Development, byte capacityPerDay = 0) : base(id)
+        public Capacity(Guid id, Activity activity = Activity.Development, int capacityPerDay = 0) : base(id)
         {
             _daysOff = new List<Period>();
             Activity = activity;
@@ -24,7 +24,7 @@ namespace DeveloperManagement.SprintManagement.Domain.Entities
         public void ModifyActivity(Activity activity)
             => Activity = activity;
 
-        public void ModifyCapacityPerDay(byte capacity)
+        public void ModifyCapacityPerDay(int capacity)
             => CapacityPerDay = capacity;
 
         public void AddDaysOff(Period daysOff)

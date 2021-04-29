@@ -12,8 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="WorkItems\EventHandlers" />
-      <Folder Include="WorkItems\Queries" />
+      <Folder Include="Bugs\EventHandlers" />
     </ItemGroup>
 
     <ItemGroup>

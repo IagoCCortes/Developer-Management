@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DeveloperManagement.Core.Domain;
 using DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
 using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
@@ -15,52 +16,56 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
         public Guid Id { get; set; }
         public string Title { get; set; }
         public Guid? AssignedTo { get; set; }
-        public byte StateId { get; set; }
+        public int StateId { get; set; }
         public Guid AreaId { get; set; }
         public Guid? IterationId { get; set; }
         public string Description { get; set; }
-        public byte PriorityId { get; set; }
+        public int PriorityId { get; set; }
         public string RepoLink { get; set; }
-        public byte StateReasonId { get; set; }
+        public int StateReasonId { get; set; }
+        
+        public WorkItemDao() {}
 
         public WorkItemDao(WorkItem workItem)
         {
             Id = workItem.Id;
             Title = workItem.Title;
             AssignedTo = workItem.AssignedTo;
-            StateId = (byte) workItem.State;
+            StateId = (int) workItem.State;
             AreaId = workItem.Area;
             IterationId = workItem.Iteration;
             Description = workItem.Description;
-            PriorityId = (byte) workItem.Priority;
+            PriorityId = (int) workItem.Priority;
             RepoLink = workItem.RepoLink?.Hyperlink;
-            StateReasonId = (byte) workItem.StateReason;
+            StateReasonId = (int) workItem.StateReason;
         }
 
-        public static void PopulateBaseWorkItem(WorkItem workItem, WorkItemDao dao, List<TagDao> tags, List<CommentDao> comments,
-            List<AttachmentDao> attachments, List<RelatedWorkDao> relatedWorkDaos)
+        public static void PopulateBaseWorkItem(WorkItem workItem, WorkItemDao dao, IEnumerable<TagDao> tags, IEnumerable<CommentDao> comments,
+            IEnumerable<AttachmentDao> attachments, IEnumerable<RelatedWorkDao> relatedWorkDaos)
         {
-            var type = typeof(WorkItem);
-            type.GetProperty("Id").SetValue(workItem, dao.Id);
-            type.GetProperty("AssignedTo").SetValue(workItem, dao.AssignedTo);
-            type.GetProperty("State", typeof(WorkItemState)).SetValue(workItem, (WorkItemState) dao.StateId);
-            type.GetProperty("Area").SetValue(workItem, dao.AreaId);
-            type.GetProperty("Iteration").SetValue(workItem, dao.IterationId);
-            type.GetProperty("Description").SetValue(workItem, dao.Description);
-            type.GetProperty("Priority").SetValue(workItem, (Priority) dao.PriorityId);
+            var entityType = typeof(Entity);
+            var workItemType = typeof(WorkItem);
+            entityType.GetProperty("Id").SetValue(workItem, dao.Id);
+            workItemType.GetProperty("Title").SetValue(workItem, dao.Title);
+            workItemType.GetProperty("AssignedTo").SetValue(workItem, dao.AssignedTo);
+            workItemType.GetProperty("State", typeof(WorkItemState)).SetValue(workItem, (WorkItemState) dao.StateId);
+            workItemType.GetProperty("Area").SetValue(workItem, dao.AreaId);
+            workItemType.GetProperty("Iteration").SetValue(workItem, dao.IterationId);
+            workItemType.GetProperty("Description").SetValue(workItem, dao.Description);
+            workItemType.GetProperty("Priority").SetValue(workItem, (Priority) dao.PriorityId);
             if (!string.IsNullOrWhiteSpace(dao.RepoLink))
             {
-                type.GetProperty("RepoLink").SetValue(workItem, new Link(dao.RepoLink));
+                workItemType.GetProperty("RepoLink").SetValue(workItem, new Link(dao.RepoLink));
             }
-            type.GetProperty("StateReason").SetValue(workItem, (StateReason) dao.StateReasonId);
-            type.GetProperty("_tags", BindingFlags.NonPublic)
-                .SetValue(workItem, tags.Select(t => t.ToTag()));
-            type.GetProperty("_comments", BindingFlags.NonPublic)
-                .SetValue(workItem, comments.Select(c => c.ToComment()));
-            type.GetProperty("_attachments", BindingFlags.NonPublic)
-                .SetValue(workItem, attachments.Select(a => a.ToAttachment()));
-            type.GetProperty("_relatedWorks", BindingFlags.NonPublic)
-                .SetValue(workItem, relatedWorkDaos.Select(r => r.ToRelatedWork()));
+            workItemType.GetProperty("StateReason").SetValue(workItem, (StateReason) dao.StateReasonId);
+            workItemType.GetField("_tags", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(workItem, tags.Select(t => t.ToTag()).ToList());
+            workItemType.GetField("_comments", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(workItem, comments.Select(c => c.ToComment()).ToList());
+            workItemType.GetField("_attachments", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(workItem, attachments.Select(a => a.ToAttachment()).ToList());
+            workItemType.GetField("_relatedWorks", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(workItem, relatedWorkDaos.Select(r => r.ToRelatedWork()).ToList());
         }
     }
 }

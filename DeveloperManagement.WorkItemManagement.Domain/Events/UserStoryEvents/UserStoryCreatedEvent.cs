@@ -6,7 +6,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.UserStoryEvents
 {
     public class UserStoryCreatedEvent : DomainEvent
     {
-        public byte? StoryPoints { get; set; }
+        public int? StoryPoints { get; set; }
         public Priority? Risk { get; set; }
         public string AcceptanceCriteria { get; set; }
         public ValueArea ValueArea { get; set; }

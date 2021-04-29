@@ -7,7 +7,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
 {
     public sealed class UserStory : WorkItem
     {
-        public byte? StoryPoints { get; private set; }
+        public int? StoryPoints { get; private set; }
         public Priority? Risk { get; private set; }
         public string AcceptanceCriteria { get; private set; }
         public ValueArea ValueArea { get; private set; }
@@ -26,7 +26,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             base.ModifyState(state);
         }
 
-        public void ModifyPlanning(Priority priority, byte? storyPoints, Priority? risk)
+        public void ModifyPlanning(Priority priority, int? storyPoints, Priority? risk)
         {
             Priority = priority;
             StoryPoints = storyPoints;
@@ -59,7 +59,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             public UserStoryBuilder(string title, Guid area, ValueArea valueArea = ValueArea.Business,
                 Priority priority = Priority.Medium) => WorkItem = new UserStory(title, area, valueArea, priority);
 
-            public UserStoryBuilder SetUserStoryOptionalFields(byte? storyPoints, Priority? risk, string acceptanceCriteria)
+            public UserStoryBuilder SetUserStoryOptionalFields(int? storyPoints, Priority? risk, string acceptanceCriteria)
             {
                 WorkItem.StoryPoints = storyPoints;
                 WorkItem.Risk = risk;

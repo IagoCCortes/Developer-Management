@@ -10,7 +10,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.ValueObjects
 
         public Link(string hyperlink)
         {
-            if (hyperlink.IsStringAUrl())
+            if (!hyperlink.IsStringAUrl())
                 throw new DomainException(nameof(Hyperlink), "Invalid Url provided for Link");
             Hyperlink = hyperlink;
         }

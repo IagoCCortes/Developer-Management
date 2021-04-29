@@ -14,6 +14,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Seed
     {
         private static readonly Dictionary<string, Type> _enumTables = new Dictionary<string, Type>
         {
+            {nameof(Activity), typeof(Activity)},
             {nameof(LinkType), typeof(LinkType)},
             {nameof(Priority), typeof(Priority)},
             {nameof(StateReason), typeof(StateReason)},
@@ -94,6 +95,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Seed
                 "`IntegratedInBuild` varchar(400) DEFAULT NULL," +
                 "`StoryPoints` int DEFAULT NULL," +
                 "`SeverityId` int NOT NULL," +
+                "`ActivityId` int DEFAULT NULL," +
                 "`SystemInfo` varchar(1000) DEFAULT NULL," +
                 "`FoundInBuild` varchar(400) DEFAULT NULL," +
                 "`Created` datetime NOT NULL," +
@@ -107,6 +109,10 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Seed
                 "ALTER TABLE `Bug` " +
                 "ADD CONSTRAINT `fk_Bug_WorkItem_Id` FOREIGN KEY(`" +
                 "Id`) REFERENCES `WorkItem` (`Id`);", transaction: transaction);
+            await connection.ExecuteAsync(
+                "ALTER TABLE `Bug` " +
+                "ADD CONSTRAINT `fk_Bug_Activity_Id` FOREIGN KEY(`" +
+                "ActivityId`) REFERENCES `Activity` (`Id`);", transaction: transaction);
             await connection.ExecuteAsync(
                 "ALTER TABLE `Bug` " +
                 "ADD CONSTRAINT `fk_Bug_Priority_Id` FOREIGN KEY(`" +

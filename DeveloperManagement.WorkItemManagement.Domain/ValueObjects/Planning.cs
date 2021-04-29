@@ -7,14 +7,14 @@ namespace DeveloperManagement.WorkItemManagement.Domain.ValueObjects
 {
     public class Planning : ValueObject
     {
-        public byte? Effort { get; private set; }
-        public byte? BusinessValue { get; private set; }
-        public byte? TimeCriticality { get; private set; }
+        public int? Effort { get; private set; }
+        public int? BusinessValue { get; private set; }
+        public int? TimeCriticality { get; private set; }
         public DateTime? StartDate { get; private set; }
         public DateTime? TargetDate { get; private set; }
         public Priority? Risk { get; private set; }
 
-        public Planning(byte? effort, byte? businessValue, byte? timeCriticality, DateTime? startDate, DateTime? targetDate, Priority? risk)
+        public Planning(int? effort, int? businessValue, int? timeCriticality, DateTime? startDate, DateTime? targetDate, Priority? risk)
         {
             Effort = effort;
             BusinessValue = businessValue;

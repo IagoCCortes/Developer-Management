@@ -5,11 +5,11 @@ using DeveloperManagement.WorkItemManagement.Application.Dtos;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
 using FluentValidation;
 
-namespace DeveloperManagement.WorkItemManagement.Application.WorkItems.Commands.AddBug
+namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.AddBug
 {
-    public class AddBugCommandValidations : AbstractValidator<AddBugCommand>
+    public class CreateBugCommandValidations : AbstractValidator<CreateBugCommand>
     {
-        public AddBugCommandValidations()
+        public CreateBugCommandValidations()
         {
             RuleFor(c => c.PriorityId).Must(p => Enum.IsDefined(typeof(Priority), p))
                 .WithMessage("Provided priority level not found");

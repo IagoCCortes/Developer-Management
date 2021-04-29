@@ -5,11 +5,11 @@ namespace DeveloperManagement.WorkItemManagement.Domain.ValueObjects
 {
     public class Effort : ValueObject
     {
-        public byte OriginalEstimate { get; private set; }
-        public byte Remaining { get; private set; }
-        public byte Completed { get; private set; }
+        public int OriginalEstimate { get; private set; }
+        public int Remaining { get; private set; }
+        public int Completed { get; private set; }
         
-        public Effort(byte originalEstimate, byte remaining, byte completed)
+        public Effort(int originalEstimate, int remaining, int completed)
         {
             OriginalEstimate = originalEstimate;
             Remaining = remaining;

@@ -12,15 +12,19 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
     public class BugDao : DatabaseEntity
     {
         public Guid Id { get; set; }
-        public byte? EffortOriginalEstimate { get; set; }
-        public byte? EffortRemaining { get; set; }
-        public byte? EffortCompleted { get; set; }
+        public int? EffortOriginalEstimate { get; set; }
+        public int? EffortRemaining { get; set; }
+        public int? EffortCompleted { get; set; }
         public string IntegratedInBuild { get; set; }
-        public byte? StoryPoints { get; set; }
-        public byte SeverityId { get; set; }
-        public byte? ActivityId { get; set; }
+        public int? StoryPoints { get; set; }
+        public int SeverityId { get; set; }
+        public int? ActivityId { get; set; }
         public string SystemInfo { get; set; }
         public string FoundInBuild { get; set; }
+
+        public BugDao()
+        {
+        }
 
         public BugDao(Bug bug) : base(bug)
         {
@@ -30,17 +34,19 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
             EffortCompleted = bug.Effort?.Completed;
             IntegratedInBuild = bug.IntegratedInBuild;
             StoryPoints = bug.StoryPoints;
-            SeverityId = (byte) bug.Severity;
-            ActivityId = (byte?) bug.Activity;
+            SeverityId = (int) bug.Severity;
+            ActivityId = (int?) bug.Activity;
             SystemInfo = bug.SystemInfo;
             FoundInBuild = bug.FoundInBuild;
         }
 
-        public Bug ToBug(WorkItemDao workItemDao, List<TagDao> tags, List<CommentDao> comments,
-            List<AttachmentDao> attachments, List<RelatedWorkDao> relatedWorkDaos)
+        public Bug ToBug(WorkItemDao workItemDao, IEnumerable<TagDao> tags, IEnumerable<CommentDao> comments,
+            IEnumerable<AttachmentDao> attachments, IEnumerable<RelatedWorkDao> relatedWorkDaos)
         {
             var type = typeof(Bug);
-            var bug = (Bug) Activator.CreateInstance(type, BindingFlags.NonPublic);
+            var bug = (Bug) type
+                .GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] { }, null)
+                .Invoke(null);
             WorkItemDao.PopulateBaseWorkItem(bug, workItemDao, tags, comments, attachments, relatedWorkDaos);
             if (EffortOriginalEstimate.HasValue)
                 type.GetProperty("Effort").SetValue(bug,

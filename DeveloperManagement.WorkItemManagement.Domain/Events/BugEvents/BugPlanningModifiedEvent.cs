@@ -6,11 +6,11 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.BugEvents
     public class BugPlanningModifiedEvent : DomainEvent
     {
         public Priority Priority { get; set; }
-        public byte? StoryPoints { get; set; }
+        public int? StoryPoints { get; set; }
         public Priority Severity { get; set; }
         public Activity? Activity { get; set; }
 
-        public BugPlanningModifiedEvent(Priority priority, byte? storyPoints, Priority severity, Activity? activity)
+        public BugPlanningModifiedEvent(Priority priority, int? storyPoints, Priority severity, Activity? activity)
         {
             Priority = priority;
             StoryPoints = storyPoints;

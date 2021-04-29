@@ -8,7 +8,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.BugEvents
     {
         public Effort Effort { get; }
         public string IntegratedInBuild { get; }
-        public byte? StoryPoints { get; }
+        public int? StoryPoints { get; }
         public Priority Severity { get; }
         public string SystemInfo { get; }
         public string FoundInBuild { get; }

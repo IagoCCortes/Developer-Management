@@ -9,7 +9,7 @@ namespace DeveloperManagement.WorkItemManagement.Application.Dtos
 {
     public class RelatedWorkDto
     {
-        public byte LinkTypeId { get; set; }
+        public int LinkTypeId { get; set; }
         public string Comment { get; set; }
         public string Url { get; set; }
         public Guid? WorkItemId { get; set; }

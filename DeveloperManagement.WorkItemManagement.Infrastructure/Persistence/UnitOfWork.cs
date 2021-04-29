@@ -20,9 +20,9 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence
         private readonly IDateTime _dateTime;
         private readonly List<(string sql, DatabaseEntity dbEntity, OperationType operationType)> _changes;
 
-        private WorkItemRepository _workItemRepository;
+        private BugRepository _bugRepository;
 
-        public IWorkItemRepository WorkItemRepository => _workItemRepository ??= new WorkItemRepository(_changes);
+        public IBugRepository BugRepository => _bugRepository ??= new BugRepository(_connectionFactory, _changes);
 
         public UnitOfWork(IDapperConnectionFactory connectionFactory,
             IDomainEventService domainEventService,

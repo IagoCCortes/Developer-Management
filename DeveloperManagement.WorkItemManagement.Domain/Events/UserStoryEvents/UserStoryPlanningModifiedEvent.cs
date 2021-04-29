@@ -6,10 +6,10 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Events.UserStoryEvents
     public class UserStoryPlanningModifiedEvent : DomainEvent
     {
         public Priority Priority { get; set; }
-        public byte? StoryPoints { get; set; }
+        public int? StoryPoints { get; set; }
         public Priority? Risk { get; set; }
 
-        public UserStoryPlanningModifiedEvent(Priority priority, byte? storyPoints, Priority? risk)
+        public UserStoryPlanningModifiedEvent(Priority priority, int? storyPoints, Priority? risk)
         {
             Priority = priority;
             StoryPoints = storyPoints;

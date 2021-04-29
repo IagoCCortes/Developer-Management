@@ -6,7 +6,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Interfaces
 {
     public interface IUnitOfWork
     {
-        IWorkItemRepository WorkItemRepository { get; }
+        IBugRepository BugRepository { get; }
         Task<int> SaveChangesAsync();
     }
 }
