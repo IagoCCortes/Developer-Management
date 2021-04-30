@@ -16,7 +16,8 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
     {
         private readonly IDapperConnectionFactory _connectionFactory;
 
-        public BugRepository(IDapperConnectionFactory connectionFactory, List<(string sql, DatabaseEntity dbEntity, OperationType operationType)> changes) :
+        public BugRepository(IDapperConnectionFactory connectionFactory,
+            List<(string sql, DatabaseEntity dbEntity, OperationType operationType)> changes) :
             base(changes)
         {
             _connectionFactory = connectionFactory;
@@ -24,10 +25,10 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
 
         public override async Task<Bug> GetByIdAsync(Guid id)
         {
-            var sql = 
+            var sql =
                 // WorkItem
                 "SELECT Id, Title, AssignedTo, StateId, AreaId, IterationId, Description, " +
-                "PriorityId, RepoLink, StateReasonId " + 
+                "PriorityId, RepoLink, StateReasonId " +
                 "FROM WorkItem Where Id = @Id;" +
                 // Bug
                 "SELECT EffortOriginalEstimate, EffortRemaining, EffortCompleted, IntegratedInBuild, " +
@@ -39,20 +40,23 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
                 // Comments
                 "SELECT Text FROM Comment WHERE WorkItemId = @Id;" +
                 // Tags
-                "SELECT Text FROM Tag WHERE WorkItemId = @Id;" + 
+                "SELECT Text FROM Tag WHERE WorkItemId = @Id;" +
                 // Attachments
                 "SELECT Path, FileName, MimeType, Created FROM Attachment WHERE WorkItemId = @Id;";
-            
+
             using var connection = await _connectionFactory.CreateConnectionAsync();
             using var multi = await connection.QueryMultipleAsync(sql, new {Id = id});
             var workItemDao = multi.Read<WorkItemDao>().FirstOrDefault();
+
+            if (workItemDao == null) return null; 
+            
             var bugDao = multi.Read<BugDao>().FirstOrDefault();
             var relatedWorkDaos = multi.Read<RelatedWorkDao>();
             var commentDaos = multi.Read<CommentDao>();
             var tagDaos = multi.Read<TagDao>();
             var attachmentDaos = multi.Read<AttachmentDao>();
             var bug = bugDao.ToBug(workItemDao, tagDaos, commentDaos, attachmentDaos, relatedWorkDaos);
-            
+
             return bug;
         }
 
@@ -96,9 +100,48 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
             }
         }
 
-        public async Task<int> ModifyPlanning()
+        public void ModifyPlanning(Bug bug)
         {
-            throw new NotImplementedException();
+            var workItemDao = new WorkItemDao
+            {
+                Id = bug.Id,
+                PriorityId = (int) bug.Priority,
+            };
+            var workItemSql = "UPDATE WorkItem set PriorityId = @PriorityId WHERE Id = @Id";
+            Changes.Add((workItemSql, workItemDao, OperationType.UPDATE));
+
+            var bugDao = new BugDao
+            {
+                Id = bug.Id,
+                StoryPoints = bug.StoryPoints,
+                SeverityId = (int) bug.Severity,
+                ActivityId = (int?) bug.Activity,
+            };
+            var bugSql =
+                "UPDATE Bug set SeverityId = @SeverityId, StoryPoints = @StoryPoints, ActivityId = @ActivityId WHERE Id = @Id";
+            Changes.Add((bugSql, bugDao, OperationType.UPDATE));
+        }
+
+        public void SpecifyInfo(Bug bug)
+        {
+            var workItemDao = new WorkItemDao
+            {
+                Id = bug.Id,
+                Description = bug.Description,
+            };
+            Changes.Add(("UPDATE WorkItem SET Description = @Description WHERE Id = @Id", workItemDao,
+                OperationType.UPDATE));
+
+            var bugDao = new BugDao
+            {
+                Id = bug.Id,
+                IntegratedInBuild = bug.IntegratedInBuild,
+                FoundInBuild = bug.FoundInBuild,
+                SystemInfo = bug.SystemInfo
+            };
+            Changes.Add((
+                "UPDATE Bug SET IntegratedInBuild = @IntegratedInBuild, FoundInBuild = @FoundInBuild, " + 
+                "SystemInfo = @SystemInfo WHERE Id = @Id", bugDao, OperationType.UPDATE));
         }
 
         public override void Delete(Guid id)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DeveloperManagement.Core.Application.Exceptions;
 using DeveloperManagement.WorkItemManagement.Domain.Enums;
 using DeveloperManagement.WorkItemManagement.Domain.Interfaces;
 using MediatR;
@@ -28,8 +29,14 @@ namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.Updat
         public async Task<Unit> Handle(ModifyBugPlanningCommand request, CancellationToken cancellationToken)
         {
             var bug = await _uow.BugRepository.GetByIdAsync(request.Id);
+
+            if (bug == null)
+                throw new NotFoundException();
+            
             bug.ModifyPlanning(request.StoryPoints, (Priority) request.PriorityId, (Priority) request.SeverityId,
                 (Activity?) request.ActivityId);
+            _uow.BugRepository.ModifyPlanning(bug);
+            await _uow.SaveChangesAsync();
             return Unit.Value;
         }
     }

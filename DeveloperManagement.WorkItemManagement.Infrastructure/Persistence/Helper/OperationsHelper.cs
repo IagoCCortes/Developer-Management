@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos;
 
 namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Helper
@@ -24,6 +25,14 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Help
             sqlBuilder.Append($") VALUES ({valuesBuilder});");
 
             return sqlBuilder.ToString();
+        }
+
+        public static string BuildUpdateStatement(string tableName, string conditionColumn, params string[] columns)
+        {
+            var sb = new StringBuilder($"UPDATE {tableName} SET {columns[0]} = @{columns[0]}");
+            foreach (var column in columns.Skip(1))
+                sb.Append($", {column} = @{column}");
+            return sb.Append($" WHERE {conditionColumn} = @{conditionColumn}").ToString();
         }
 
         public static string BuildDeleteStatement(this DatabaseEntity dbEntity) =>

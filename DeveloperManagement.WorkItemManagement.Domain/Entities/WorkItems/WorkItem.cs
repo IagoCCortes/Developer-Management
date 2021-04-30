@@ -30,7 +30,9 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
         public ReadOnlyCollection<RelatedWork> RelatedWorks => _relatedWorks.AsReadOnly();
         private readonly List<Attachment> _attachments;
         public ReadOnlyCollection<Attachment> Attachments => _attachments.AsReadOnly();
-        public List<DomainEvent> DomainEvents { get; private set; }
+        private List<DomainEvent> _domainEvents;
+
+        public List<DomainEvent> DomainEvents => _domainEvents ??= new List<DomainEvent>();
 
         protected WorkItem()
         {
@@ -45,7 +47,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems
             _attachments = new List<Attachment>();
             _relatedWorks = new List<RelatedWork>();
             _comments = new List<Comment>();
-            DomainEvents = new List<DomainEvent>();
         }
 
 
