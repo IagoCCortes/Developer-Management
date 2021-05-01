@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.ChangeState;
 using DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.CreateBug;
 using DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.ModifyBugPlanning;
 using DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.ModifyEffort;
@@ -30,6 +31,13 @@ namespace DeveloperManagement.WorkItemManagement.WebApi.Controllers
         
         [HttpPatch("effort")]
         public async Task<ActionResult> ModifyEffort(ModifyEffortCommand command)
+        {
+            await Mediator.Send(command);
+            return NoContent();
+        }
+        
+        [HttpPatch("state")]
+        public async Task<ActionResult> ChangeState(ChangeStateCommand command)
         {
             await Mediator.Send(command);
             return NoContent();

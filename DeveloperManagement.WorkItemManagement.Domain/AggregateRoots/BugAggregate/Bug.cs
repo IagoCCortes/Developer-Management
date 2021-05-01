@@ -1,6 +1,5 @@
 ﻿using System;
 using DeveloperManagement.Core.Domain;
-using DeveloperManagement.Core.Domain.Extensions;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BaseWorkItemAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate.Events;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
@@ -38,10 +37,10 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggreg
             Priority = priority;
             Severity = severity;
             Activity = activity;
-            
+
             DomainEvents.Add(new BugPlanningModifiedEvent(priority, storyPoints, severity, activity));
         }
-        
+
         public void SpecifyBugInfo(string description, string systemInfo, string foundInBuild, string integratedInBuild)
         {
             Description = description;
@@ -50,7 +49,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggreg
             IntegratedInBuild = integratedInBuild;
             DomainEvents.Add(new BugInfoModifiedEvent(description, systemInfo, foundInBuild, integratedInBuild));
         }
-        
+
         public void ModifyEffort(Effort effort)
         {
             Effort = effort;
@@ -61,32 +60,35 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggreg
         {
             ValidateStateAndStateReason(state, stateReason);
             StateReason = stateReason;
-            
+
             if (state == WorkItemState.Closed && Effort != null)
                 ModifyEffort(new Effort(Effort.OriginalEstimate, 0, (Effort.Completed + Effort.Remaining)));
-            
+
             base.ModifyState(state);
         }
 
         private void ValidateStateAndStateReason(WorkItemState state, StateReason stateReason)
         {
-            if (state == WorkItemState.Removed)
-                throw new DomainException(nameof(State), $"A {nameof(Bug)} does not have a {state} state");
+            var invalid = state switch
+            {
+                WorkItemState.New => stateReason != StateReason.New && StateReason != StateReason.BuildFailure,
+                WorkItemState.Active => stateReason != StateReason.Approved && stateReason != StateReason.Investigate,
+                WorkItemState.Resolved => stateReason != StateReason.Fixed && StateReason != StateReason.AsDesigned &&
+                                          StateReason != StateReason.CannotReproduce &&
+                                          StateReason != StateReason.CopiedToBacklog &&
+                                          StateReason != StateReason.Deferred && StateReason != StateReason.Duplicate &&
+                                          StateReason != StateReason.Obsolete,
+                WorkItemState.Closed => stateReason != StateReason.FixedAndVerified &&
+                                        StateReason != StateReason.AsDesigned &&
+                                        StateReason != StateReason.CannotReproduce &&
+                                        StateReason != StateReason.CopiedToBacklog &&
+                                        StateReason != StateReason.Deferred && StateReason != StateReason.Duplicate &&
+                                        StateReason != StateReason.Obsolete,
+                WorkItemState.Removed => throw new DomainException(nameof(State),
+                    $"A {nameof(Bug)} does not have a {state} state")
+            };
 
-            var invalidNew = state == WorkItemState.New &&
-                             !stateReason.IsOneOf(StateReason.New, StateReason.BuildFailure);
-            var invalidActive = state == WorkItemState.Active &&
-                                !stateReason.IsOneOf(StateReason.Approved, StateReason.Investigate);
-            var invalidResolved = state == WorkItemState.Resolved && !stateReason.IsOneOf(StateReason.Fixed,
-                StateReason.AsDesigned,
-                StateReason.CannotReproduce, StateReason.CopiedToBacklog, StateReason.Deferred,
-                StateReason.Duplicate, StateReason.Obsolete);
-            var invalidClosed = state == WorkItemState.Closed && !stateReason.IsOneOf(StateReason.FixedAndVerified,
-                StateReason.AsDesigned,
-                StateReason.CannotReproduce, StateReason.CopiedToBacklog, StateReason.Deferred,
-                StateReason.Duplicate, StateReason.Obsolete);
-
-            if (invalidNew || invalidActive || invalidResolved || invalidClosed)
+            if (invalid)
                 throw new DomainException(nameof(StateReason), "Invalid reason for current state");
         }
 

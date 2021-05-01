@@ -10,5 +10,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggreg
         void ModifyPlanning(Bug bug);
         void SpecifyInfo(Bug bug);
         void ModifyEffort(Bug bug);
+        void ChangeState(Bug bug);
     }
 }

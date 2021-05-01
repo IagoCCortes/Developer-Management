@@ -14,6 +14,8 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.CommentAg
         public Guid WorkItemId { get; private set; }
         public DateTime Created { get; private set; }
         public string CreatedBy { get; private set; }
+        private readonly List<Reaction> _reactions;
+        public IReadOnlyCollection<Reaction> Reactions => _reactions.AsReadOnly();
 
         private Comment()
         {
@@ -32,7 +34,8 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.CommentAg
             WorkItemId = workItemId;
             Created = created;
             CreatedBy = createdBy;
-            
+
+            _reactions = new List<Reaction>();
             DomainEvents.Add(new CommentAddedEvent(Id, text, createdBy, created, workItemId));
         }
 
@@ -43,6 +46,13 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.CommentAg
 
             Text = Comment;
             DomainEvents.Add(new CommentModifiedEvent(Text, Id));
+        }
+
+        public void ReactToComment(Reaction reaction)
+        {
+            if (reaction == null) throw new DomainException(nameof(Reactions), "Reaction cannot be empty");
+
+            if (!_reactions.Remove(reaction))  _reactions.Add(reaction);
         }
 
         private List<DomainEvent> _domainEvents;

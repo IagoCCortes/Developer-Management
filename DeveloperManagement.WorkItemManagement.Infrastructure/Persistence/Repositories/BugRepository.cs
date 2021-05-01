@@ -130,8 +130,25 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
             var bugDao = new BugDao(bug);
             var bugSql =
                 OperationsHelper.BuildUpdateStatement(bugDao.GetTableName(), nameof(bug.Id),
-                    nameof(bugDao.EffortOriginalEstimate), nameof(bugDao.EffortRemaining), nameof(bugDao.EffortCompleted));
+                    nameof(bugDao.EffortOriginalEstimate), nameof(bugDao.EffortRemaining),
+                    nameof(bugDao.EffortCompleted));
             Changes.Add((bugSql, bugDao, OperationType.UPDATE));
+        }
+
+        public void ChangeState(Bug bug)
+        {
+            var workItemDao = new WorkItemDao
+            {
+                Id = bug.Id,
+                StateId = (int) bug.State,
+                StateReasonId = (int) bug.StateReason,
+            };
+            
+            workItemDao.IncludeDomainEvents(bug.DomainEvents);
+
+            var workItemSql = OperationsHelper.BuildUpdateStatement(workItemDao.GetTableName(), nameof(workItemDao.Id),
+                nameof(workItemDao.StateId), nameof(workItemDao.StateReasonId));
+            Changes.Add((workItemSql, workItemDao, OperationType.UPDATE));
         }
 
         public void AddComment(Bug bug)

@@ -25,6 +25,9 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
                 _domainEvents.AddRange(hasDomainEvents.DomainEvents);
         }
 
+        public void IncludeDomainEvents(List<DomainEvent> events)
+            => _domainEvents.AddRange(events);
+
         public bool HasDomainEvents() => _domainEvents.Any();
         public List<DomainEvent> DomainEvents() => _domainEvents;
     }

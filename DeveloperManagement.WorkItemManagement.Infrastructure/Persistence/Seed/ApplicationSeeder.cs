@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.CommentAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Interfaces;
 
@@ -21,6 +22,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Seed
             {nameof(ValueArea), typeof(ValueArea)},
             {nameof(WorkItemState), typeof(WorkItemState)},
             {nameof(WorkItemType), typeof(WorkItemType)},
+            {nameof(Reactiontype), typeof(Reactiontype)},
         };
 
         private readonly IDapperConnectionFactory _factory;
@@ -153,6 +155,27 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Seed
                 "ALTER TABLE `Comment` " +
                 "ADD CONSTRAINT `fk_Comment_WorkItem_Id` FOREIGN KEY(`" +
                 "WorkItemId`) REFERENCES `WorkItem` (`Id`);", transaction: transaction);
+            
+            await connection.ExecuteAsync(
+                "CREATE TABLE `Reaction` (" +
+                "`Id` int NOT NULL AUTO_INCREMENT," +
+                "`ReactionTypeId` int NOT NULL," +
+                "`CommentId` char(36) NOT NULL," +
+                "`Created` datetime NOT NULL," +
+                "`CreatedBy` varchar(45) NOT NULL," +
+                "`LastModified` datetime DEFAULT NULL," +
+                "`LastModifiedBy` varchar(45) DEFAULT NULL," +
+                "PRIMARY KEY (`Id`)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", transaction: transaction);
+            
+            await connection.ExecuteAsync(
+                "ALTER TABLE `Reaction` " +
+                "ADD CONSTRAINT `fk_Reaction_Comment_Id` FOREIGN KEY(`" +
+                "CommentId`) REFERENCES `Comment` (`Id`);", transaction: transaction);
+            await connection.ExecuteAsync(
+                "ALTER TABLE `Reaction` " +
+                "ADD CONSTRAINT `fk_Reaction_ReactionType_Id` FOREIGN KEY(`" +
+                "ReactionTypeId`) REFERENCES `ReactionType` (`Id`);", transaction: transaction);
             
             await connection.ExecuteAsync(
                 "CREATE TABLE `RelatedWork` (" +

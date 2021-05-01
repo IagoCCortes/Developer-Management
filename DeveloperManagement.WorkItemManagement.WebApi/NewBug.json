@@ -3,7 +3,7 @@
   "assignedTo": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "stateReasonId": 18,
   "teamId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "description": "Sometimes I fell like throwing my hands",
+  "description": "What use is it to struggle? Your fate is inevitable...",
   "priorityId": 3,
   "repoLink": "https://www.asd.com/54",
   "tags": [
@@ -23,6 +23,7 @@
       "comment": "Something"
     }
   ],
+  "integratedInBuild": "le premier",
   "originalEstimate": 24,
   "remaining": 24,
   "completed": 0,
