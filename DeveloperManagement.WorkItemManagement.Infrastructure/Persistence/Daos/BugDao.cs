@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems;
-using DeveloperManagement.WorkItemManagement.Domain.Enums;
-using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Common.ValueObjects;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Helper;
 
 namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
@@ -40,14 +40,14 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
             FoundInBuild = bug.FoundInBuild;
         }
 
-        public Bug ToBug(WorkItemDao workItemDao, IEnumerable<TagDao> tags, IEnumerable<CommentDao> comments,
-            IEnumerable<AttachmentDao> attachments, IEnumerable<RelatedWorkDao> relatedWorkDaos)
+        public Bug ToBug(WorkItemDao workItemDao, IEnumerable<TagDao> tags, IEnumerable<AttachmentDao> attachments,
+            IEnumerable<RelatedWorkDao> relatedWorkDaos)
         {
             var type = typeof(Bug);
             var bug = (Bug) type
                 .GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] { }, null)
                 .Invoke(null);
-            WorkItemDao.PopulateBaseWorkItem(bug, workItemDao, tags, comments, attachments, relatedWorkDaos);
+            WorkItemDao.PopulateBaseWorkItem(bug, workItemDao, tags, attachments, relatedWorkDaos);
             if (EffortOriginalEstimate.HasValue)
                 type.GetProperty("Effort").SetValue(bug,
                     new Effort(EffortOriginalEstimate.Value, EffortRemaining!.Value, EffortCompleted!.Value));

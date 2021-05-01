@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using DeveloperManagement.Core.Domain.Extensions;
 using DeveloperManagement.Core.Domain.Helper;
-using DeveloperManagement.WorkItemManagement.Domain.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
 using FluentValidation;
 
 namespace DeveloperManagement.WorkItemManagement.Application.Dtos
@@ -13,8 +13,8 @@ namespace DeveloperManagement.WorkItemManagement.Application.Dtos
         public Guid? AssignedTo { get; set; }
         public int? StateId { get; set; }
         public int? StateReasonId { get; set; }
-        public Guid AreaId { get; set; }
-        public Guid? IterationId { get; set; }
+        public Guid TeamId { get; set; }
+        public Guid? SprintId { get; set; }
         public string Description { get; set; }
         public int PriorityId { get; set; }
         public string RepoLink { get; set; }
@@ -51,16 +51,16 @@ namespace DeveloperManagement.WorkItemManagement.Application.Dtos
                 .WithMessage("Provided priority level not found");
         }
         
-        public static IRuleBuilderOptions<T, Guid> AreadId<T>(this IRuleBuilder<T,Guid> ruleBuilder)
+        public static IRuleBuilderOptions<T, Guid> TeamId<T>(this IRuleBuilder<T,Guid> ruleBuilder)
         {
             return ruleBuilder.Must(a => a != Guid.Empty)
-                .WithMessage("Area must not be empty");
+                .WithMessage("Team identifier must not be empty");
         }
         
-        public static IRuleBuilderOptions<T, Guid?> IterationId<T>(this IRuleBuilder<T,Guid?> ruleBuilder)
+        public static IRuleBuilderOptions<T, Guid?> SprintId<T>(this IRuleBuilder<T,Guid?> ruleBuilder)
         {
             return ruleBuilder.Must(g => !g.HasValue || g != Guid.Empty)
-                .WithMessage("Invalid Iteration identification");
+                .WithMessage("Invalid Sprint identifier");
         }
         
         public static IRuleBuilderOptions<T, string> RepoLink<T>(this IRuleBuilder<T,string> ruleBuilder)

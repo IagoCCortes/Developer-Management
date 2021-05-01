@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems;
-using DeveloperManagement.WorkItemManagement.Domain.Interfaces;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;
 using MediatR;
 
 namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Queries.GetBugById

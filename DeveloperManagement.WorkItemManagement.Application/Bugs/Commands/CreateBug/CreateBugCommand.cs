@@ -5,25 +5,25 @@ using System.Threading.Tasks;
 using DeveloperManagement.Core.Application.Interfaces;
 using DeveloperManagement.WorkItemManagement.Application.Dtos;
 using DeveloperManagement.WorkItemManagement.Application.Interfaces;
-using DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems;
-using DeveloperManagement.WorkItemManagement.Domain.Enums;
-using DeveloperManagement.WorkItemManagement.Domain.Interfaces;
-using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BaseWorkItemAggregate;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;
+using DeveloperManagement.WorkItemManagement.Domain.Common.ValueObjects;
 using MediatR;
 
-namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.AddBug
+namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.CreateBug
 {
     public class CreateBugCommand : IRequest<Guid>
     {
         public string Title { get; set; }
         public Guid? AssignedTo { get; set; }
         public int StateReasonId { get; set; }
-        public Guid AreaId { get; set; }
-        public Guid? IterationId { get; set; }
+        public Guid TeamId { get; set; }
+        public Guid? SprintId { get; set; }
         public string Description { get; set; }
         public int PriorityId { get; set; }
         public string RepoLink { get; set; }
-        public IEnumerable<string> Comments { get; set; }
         public IEnumerable<string> Tags { get; set; }
         public IEnumerable<AttachmentDto> Attachments { get; set; }
         public IEnumerable<RelatedWorkDto> RelatedWorks { get; set; }
@@ -53,10 +53,10 @@ namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.AddBu
 
         public async Task<Guid> Handle(CreateBugCommand request, CancellationToken cancellationToken)
         {
-            var builder = new Bug.BugBuilder(request.Title, request.AreaId, (Priority) request.PriorityId,
+            var builder = new Bug.BugBuilder(request.Title, request.TeamId, (Priority) request.PriorityId,
                 (StateReason) request.StateReasonId, (Priority) request.SeverityId);
 
-            builder.SetWorkItemOptionalFields(request.Description, request.AssignedTo, request.IterationId,
+            builder.SetWorkItemOptionalFields(request.Description, request.AssignedTo, request.SprintId,
                 String.IsNullOrWhiteSpace(request.RepoLink) ? null : new Link(request.RepoLink));
 
             builder.SetBugOptionalFields(
@@ -70,9 +70,6 @@ namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.AddBu
 
             foreach (var dto in request.Attachments)
                 builder.AddAttachment(dto.ToAttachment(_mimeTypeMapper.GetMimeType(dto.FileName), now));
-
-            foreach (var comment in request.Comments)
-                builder.AddComment(new Comment(comment));
 
             foreach (var tag in request.Tags)
                 builder.AddTag(new Tag(tag));

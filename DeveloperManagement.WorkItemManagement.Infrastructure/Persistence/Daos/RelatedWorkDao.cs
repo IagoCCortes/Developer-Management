@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Reflection;
 using DeveloperManagement.Core.Domain;
-using DeveloperManagement.WorkItemManagement.Domain.Entities;
-using DeveloperManagement.WorkItemManagement.Domain.Enums;
-using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Entities;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Common.ValueObjects;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Helper;
 
 namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos

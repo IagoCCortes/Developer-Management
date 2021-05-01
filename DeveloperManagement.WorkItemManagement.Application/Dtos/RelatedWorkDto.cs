@@ -1,8 +1,8 @@
 ﻿using System;
 using DeveloperManagement.Core.Domain.Helper;
-using DeveloperManagement.WorkItemManagement.Domain.Entities;
-using DeveloperManagement.WorkItemManagement.Domain.Enums;
-using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Entities;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Common.ValueObjects;
 using FluentValidation;
 
 namespace DeveloperManagement.WorkItemManagement.Application.Dtos

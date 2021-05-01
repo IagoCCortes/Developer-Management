@@ -2,14 +2,10 @@
   "title": "West wing",
   "assignedTo": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "stateReasonId": 18,
-  "areaId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "teamId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "description": "Sometimes I fell like throwing my hands",
   "priorityId": 3,
   "repoLink": "https://www.asd.com/54",
-  "comments": [
-    "Pero",
-    "Si tú no quieres"
-  ],
   "tags": [
     "hard",
     "damn"

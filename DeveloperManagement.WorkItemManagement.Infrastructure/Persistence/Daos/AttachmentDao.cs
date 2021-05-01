@@ -1,5 +1,5 @@
 ﻿using System;
-using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BaseWorkItemAggregate;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Helper;
 
 namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos

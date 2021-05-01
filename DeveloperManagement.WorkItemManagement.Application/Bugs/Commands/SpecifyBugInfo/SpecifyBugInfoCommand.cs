@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using DeveloperManagement.Core.Application.Exceptions;
-using DeveloperManagement.WorkItemManagement.Domain.Interfaces;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;
 using MediatR;
 
 namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.SpecifyBugInfo
@@ -30,6 +30,8 @@ namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.Speci
             var bug = await _uow.BugRepository.GetByIdAsync(request.Id);
             if (bug == null)
                 throw new NotFoundException();
+            
+            bug.SpecifyBugInfo(request.Description, request.SystemInfo, request.FoundInBuild, request.IntegratedInBuild);
             
             _uow.BugRepository.SpecifyInfo(bug);
             await _uow.SaveChangesAsync();

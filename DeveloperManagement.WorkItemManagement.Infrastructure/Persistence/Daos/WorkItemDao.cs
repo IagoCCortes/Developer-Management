@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DeveloperManagement.Core.Domain;
-using DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems;
-using DeveloperManagement.WorkItemManagement.Domain.Enums;
-using DeveloperManagement.WorkItemManagement.Domain.ValueObjects;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BaseWorkItemAggregate;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Common.ValueObjects;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Helper;
 
 namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
@@ -17,8 +17,8 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
         public string Title { get; set; }
         public Guid? AssignedTo { get; set; }
         public int StateId { get; set; }
-        public Guid AreaId { get; set; }
-        public Guid? IterationId { get; set; }
+        public Guid TeamId { get; set; }
+        public Guid? SprintId { get; set; }
         public string Description { get; set; }
         public int PriorityId { get; set; }
         public string RepoLink { get; set; }
@@ -32,15 +32,15 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
             Title = workItem.Title;
             AssignedTo = workItem.AssignedTo;
             StateId = (int) workItem.State;
-            AreaId = workItem.Area;
-            IterationId = workItem.Iteration;
+            TeamId = workItem.TeamId;
+            SprintId = workItem.SprintId;
             Description = workItem.Description;
             PriorityId = (int) workItem.Priority;
             RepoLink = workItem.RepoLink?.Hyperlink;
             StateReasonId = (int) workItem.StateReason;
         }
 
-        public static void PopulateBaseWorkItem(WorkItem workItem, WorkItemDao dao, IEnumerable<TagDao> tags, IEnumerable<CommentDao> comments,
+        public static void PopulateBaseWorkItem(WorkItem workItem, WorkItemDao dao, IEnumerable<TagDao> tags,
             IEnumerable<AttachmentDao> attachments, IEnumerable<RelatedWorkDao> relatedWorkDaos)
         {
             var entityType = typeof(Entity);
@@ -49,8 +49,8 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
             workItemType.GetProperty("Title").SetValue(workItem, dao.Title);
             workItemType.GetProperty("AssignedTo").SetValue(workItem, dao.AssignedTo);
             workItemType.GetProperty("State", typeof(WorkItemState)).SetValue(workItem, (WorkItemState) dao.StateId);
-            workItemType.GetProperty("Area").SetValue(workItem, dao.AreaId);
-            workItemType.GetProperty("Iteration").SetValue(workItem, dao.IterationId);
+            workItemType.GetProperty("TeamId").SetValue(workItem, dao.TeamId);
+            workItemType.GetProperty("SprintId").SetValue(workItem, dao.SprintId);
             workItemType.GetProperty("Description").SetValue(workItem, dao.Description);
             workItemType.GetProperty("Priority").SetValue(workItem, (Priority) dao.PriorityId);
             if (!string.IsNullOrWhiteSpace(dao.RepoLink))
@@ -60,8 +60,6 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
             workItemType.GetProperty("StateReason").SetValue(workItem, (StateReason) dao.StateReasonId);
             workItemType.GetField("_tags", BindingFlags.NonPublic | BindingFlags.Instance)
                 .SetValue(workItem, tags.Select(t => t.ToTag()).ToList());
-            workItemType.GetField("_comments", BindingFlags.NonPublic | BindingFlags.Instance)
-                .SetValue(workItem, comments.Select(c => c.ToComment()).ToList());
             workItemType.GetField("_attachments", BindingFlags.NonPublic | BindingFlags.Instance)
                 .SetValue(workItem, attachments.Select(a => a.ToAttachment()).ToList());
             workItemType.GetField("_relatedWorks", BindingFlags.NonPublic | BindingFlags.Instance)

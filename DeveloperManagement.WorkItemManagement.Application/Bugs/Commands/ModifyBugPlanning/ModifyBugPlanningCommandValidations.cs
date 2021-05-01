@@ -1,10 +1,8 @@
-﻿using System.Data;
-using DeveloperManagement.Core.Application;
+﻿using DeveloperManagement.Core.Application;
 using DeveloperManagement.WorkItemManagement.Application.Common;
-using DeveloperManagement.WorkItemManagement.Application.Dtos;
 using FluentValidation;
 
-namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.UpdateBug
+namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.ModifyBugPlanning
 {
     public class ModifyBugPlanningCommandValidations : AbstractValidator<ModifyBugPlanningCommand>
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DeveloperManagement.Core.Domain.Interfaces;
-using DeveloperManagement.WorkItemManagement.Domain.Interfaces;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Helper;
 

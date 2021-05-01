@@ -2,11 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using DeveloperManagement.Core.Application.Exceptions;
-using DeveloperManagement.WorkItemManagement.Domain.Enums;
-using DeveloperManagement.WorkItemManagement.Domain.Interfaces;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;
 using MediatR;
 
-namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.UpdateBug
+namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.ModifyBugPlanning
 {
     public class ModifyBugPlanningCommand : IRequest
     {

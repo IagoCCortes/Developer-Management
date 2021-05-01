@@ -1,5 +1,5 @@
 ﻿using System;
-using DeveloperManagement.WorkItemManagement.Domain.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
 using FluentValidation;
 
 namespace DeveloperManagement.WorkItemManagement.Application.Common

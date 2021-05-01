@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
-using DeveloperManagement.WorkItemManagement.Domain.Enums;
+using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Interfaces;
 
 namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Seed
@@ -59,8 +59,8 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Seed
                 "`Title` varchar(150) NOT NULL," +
                 "`AssignedTo` char(36) DEFAULT NULL," +
                 "`StateId` int NOT NULL," +
-                "`AreaId` char(36) NOT NULL," +
-                "`IterationId` char(36) DEFAULT NULL," +
+                "`TeamId` char(36) NOT NULL," +
+                "`SprintId` char(36) DEFAULT NULL," +
                 "`Description` varchar(4000) DEFAULT NULL," +
                 "`PriorityId` int NOT NULL," +
                 "`RepoLink` varchar(1000) DEFAULT NULL," +
@@ -139,7 +139,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Seed
             
             await connection.ExecuteAsync(
                 "CREATE TABLE `Comment` (" +
-                "`Id` int NOT NULL AUTO_INCREMENT," +
+                "`Id` char(36) NOT NULL," +
                 "`Text` varchar(1000) Not NULL," +
                 "`WorkItemId` char(36) NOT NULL," +
                 "`Created` datetime NOT NULL," +

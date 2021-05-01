@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Dapper;
-using DeveloperManagement.WorkItemManagement.Domain.Entities.WorkItems;
-using DeveloperManagement.WorkItemManagement.Domain.Interfaces;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Helper;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Interfaces;
@@ -27,7 +25,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
         {
             var sql =
                 // WorkItem
-                "SELECT Id, Title, AssignedTo, StateId, AreaId, IterationId, Description, " +
+                "SELECT Id, Title, AssignedTo, StateId, TeamId, SprintId, Description, " +
                 "PriorityId, RepoLink, StateReasonId " +
                 "FROM WorkItem Where Id = @Id;" +
                 // Bug
@@ -37,8 +35,6 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
                 // RelatedWorks
                 "SELECT Id, LinkTypeId, Comment, Url, ReferencedWorkItemId, WorkItemId " +
                 "FROM RelatedWork WHERE WorkItemId = @Id;" +
-                // Comments
-                "SELECT Text FROM Comment WHERE WorkItemId = @Id;" +
                 // Tags
                 "SELECT Text FROM Tag WHERE WorkItemId = @Id;" +
                 // Attachments
@@ -48,14 +44,13 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
             using var multi = await connection.QueryMultipleAsync(sql, new {Id = id});
             var workItemDao = multi.Read<WorkItemDao>().FirstOrDefault();
 
-            if (workItemDao == null) return null; 
-            
+            if (workItemDao == null) return null;
+
             var bugDao = multi.Read<BugDao>().FirstOrDefault();
             var relatedWorkDaos = multi.Read<RelatedWorkDao>();
-            var commentDaos = multi.Read<CommentDao>();
             var tagDaos = multi.Read<TagDao>();
             var attachmentDaos = multi.Read<AttachmentDao>();
-            var bug = bugDao.ToBug(workItemDao, tagDaos, commentDaos, attachmentDaos, relatedWorkDaos);
+            var bug = bugDao.ToBug(workItemDao, tagDaos, attachmentDaos, relatedWorkDaos);
 
             return bug;
         }
@@ -67,12 +62,6 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
 
             var bugDao = new BugDao((Bug) bug);
             Changes.Add((bugDao.BuildInsertStatement(), bugDao, OperationType.INSERT));
-
-            foreach (var comment in bug.Comments)
-            {
-                var commentDao = new CommentDao {Text = comment.Text, WorkItemId = bug.Id};
-                Changes.Add((commentDao.BuildInsertStatement(), commentDao, OperationType.INSERT));
-            }
 
             using (var enumerator = bug.Attachments.GetEnumerator())
             {
@@ -107,7 +96,8 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
                 Id = bug.Id,
                 PriorityId = (int) bug.Priority,
             };
-            var workItemSql = "UPDATE WorkItem set PriorityId = @PriorityId WHERE Id = @Id";
+            var workItemSql = OperationsHelper.BuildUpdateStatement(workItemDao.GetTableName(), nameof(workItemDao.Id),
+                nameof(workItemDao.PriorityId));
             Changes.Add((workItemSql, workItemDao, OperationType.UPDATE));
 
             var bugDao = new BugDao
@@ -118,7 +108,8 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
                 ActivityId = (int?) bug.Activity,
             };
             var bugSql =
-                "UPDATE Bug set SeverityId = @SeverityId, StoryPoints = @StoryPoints, ActivityId = @ActivityId WHERE Id = @Id";
+                OperationsHelper.BuildUpdateStatement(bugDao.GetTableName(), nameof(bug.Id),
+                    nameof(bugDao.StoryPoints), nameof(bugDao.SeverityId), nameof(bugDao.ActivityId));
             Changes.Add((bugSql, bugDao, OperationType.UPDATE));
         }
 
@@ -129,8 +120,9 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
                 Id = bug.Id,
                 Description = bug.Description,
             };
-            Changes.Add(("UPDATE WorkItem SET Description = @Description WHERE Id = @Id", workItemDao,
-                OperationType.UPDATE));
+            var workItemSql = OperationsHelper.BuildUpdateStatement(workItemDao.GetTableName(), nameof(workItemDao.Id),
+                nameof(workItemDao.Description));
+            Changes.Add((workItemSql, workItemDao, OperationType.UPDATE));
 
             var bugDao = new BugDao
             {
@@ -139,9 +131,34 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
                 FoundInBuild = bug.FoundInBuild,
                 SystemInfo = bug.SystemInfo
             };
-            Changes.Add((
-                "UPDATE Bug SET IntegratedInBuild = @IntegratedInBuild, FoundInBuild = @FoundInBuild, " + 
-                "SystemInfo = @SystemInfo WHERE Id = @Id", bugDao, OperationType.UPDATE));
+            var bugSql =
+                OperationsHelper.BuildUpdateStatement(bugDao.GetTableName(), nameof(bug.Id),
+                    nameof(bugDao.IntegratedInBuild), nameof(bugDao.FoundInBuild), nameof(bugDao.SystemInfo));
+            Changes.Add((bugSql, bugDao, OperationType.UPDATE));
+        }
+        
+        public void AddComment(Bug bug)
+        {
+            var workItemDao = new WorkItemDao
+            {
+                Id = bug.Id,
+                Description = bug.Description,
+            };
+            var workItemSql = OperationsHelper.BuildUpdateStatement(workItemDao.GetTableName(), nameof(workItemDao.Id),
+                nameof(workItemDao.Description));
+            Changes.Add((workItemSql, workItemDao, OperationType.UPDATE));
+
+            var bugDao = new BugDao
+            {
+                Id = bug.Id,
+                IntegratedInBuild = bug.IntegratedInBuild,
+                FoundInBuild = bug.FoundInBuild,
+                SystemInfo = bug.SystemInfo
+            };
+            var bugSql =
+                OperationsHelper.BuildUpdateStatement(bugDao.GetTableName(), nameof(bug.Id),
+                    nameof(bugDao.IntegratedInBuild), nameof(bugDao.FoundInBuild), nameof(bugDao.SystemInfo));
+            Changes.Add((bugSql, bugDao, OperationType.UPDATE));
         }
 
         public override void Delete(Guid id)
