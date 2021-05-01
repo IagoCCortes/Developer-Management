@@ -100,13 +100,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
                 nameof(workItemDao.PriorityId));
             Changes.Add((workItemSql, workItemDao, OperationType.UPDATE));
 
-            var bugDao = new BugDao
-            {
-                Id = bug.Id,
-                StoryPoints = bug.StoryPoints,
-                SeverityId = (int) bug.Severity,
-                ActivityId = (int?) bug.Activity,
-            };
+            var bugDao = new BugDao(bug);
             var bugSql =
                 OperationsHelper.BuildUpdateStatement(bugDao.GetTableName(), nameof(bug.Id),
                     nameof(bugDao.StoryPoints), nameof(bugDao.SeverityId), nameof(bugDao.ActivityId));
@@ -124,19 +118,22 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
                 nameof(workItemDao.Description));
             Changes.Add((workItemSql, workItemDao, OperationType.UPDATE));
 
-            var bugDao = new BugDao
-            {
-                Id = bug.Id,
-                IntegratedInBuild = bug.IntegratedInBuild,
-                FoundInBuild = bug.FoundInBuild,
-                SystemInfo = bug.SystemInfo
-            };
+            var bugDao = new BugDao(bug);
             var bugSql =
                 OperationsHelper.BuildUpdateStatement(bugDao.GetTableName(), nameof(bug.Id),
                     nameof(bugDao.IntegratedInBuild), nameof(bugDao.FoundInBuild), nameof(bugDao.SystemInfo));
             Changes.Add((bugSql, bugDao, OperationType.UPDATE));
         }
-        
+
+        public void ModifyEffort(Bug bug)
+        {
+            var bugDao = new BugDao(bug);
+            var bugSql =
+                OperationsHelper.BuildUpdateStatement(bugDao.GetTableName(), nameof(bug.Id),
+                    nameof(bugDao.EffortOriginalEstimate), nameof(bugDao.EffortRemaining), nameof(bugDao.EffortCompleted));
+            Changes.Add((bugSql, bugDao, OperationType.UPDATE));
+        }
+
         public void AddComment(Bug bug)
         {
             var workItemDao = new WorkItemDao

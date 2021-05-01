@@ -9,5 +9,6 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggreg
         Task<Bug> GetByIdAsync(Guid id);
         void ModifyPlanning(Bug bug);
         void SpecifyInfo(Bug bug);
+        void ModifyEffort(Bug bug);
     }
 }

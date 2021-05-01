@@ -1093,9 +1093,8 @@ SELECT|sys.sys_config
     </foreign-key>
     <column id="334" parent="289" name="Id">
       <Position>1</Position>
-      <DataType>int|0s</DataType>
+      <DataType>char(36)|0s</DataType>
       <NotNull>1</NotNull>
-      <SequenceIdentity>null</SequenceIdentity>
     </column>
     <column id="335" parent="289" name="Text">
       <Position>2</Position>
@@ -1334,12 +1333,12 @@ SELECT|sys.sys_config
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="385" parent="296" name="AreaId">
+    <column id="385" parent="296" name="TeamId">
       <Position>5</Position>
       <DataType>char(36)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="386" parent="296" name="IterationId">
+    <column id="386" parent="296" name="SprintId">
       <Position>6</Position>
       <DataType>char(36)|0s</DataType>
     </column>

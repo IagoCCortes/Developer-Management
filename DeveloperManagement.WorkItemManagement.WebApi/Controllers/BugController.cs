@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.CreateBug;
 using DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.ModifyBugPlanning;
+using DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.ModifyEffort;
 using DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.SpecifyBugInfo;
 using DeveloperManagement.WorkItemManagement.Application.Bugs.Queries.GetBugById;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,13 @@ namespace DeveloperManagement.WorkItemManagement.WebApi.Controllers
         
         [HttpPatch("info")]
         public async Task<ActionResult> SpecifyBugInfo(SpecifyBugInfoCommand command)
+        {
+            await Mediator.Send(command);
+            return NoContent();
+        }
+        
+        [HttpPatch("effort")]
+        public async Task<ActionResult> ModifyEffort(ModifyEffortCommand command)
         {
             await Mediator.Send(command);
             return NoContent();
