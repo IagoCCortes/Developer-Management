@@ -91,9 +91,9 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Seed
             await connection.ExecuteAsync(
                 "CREATE TABLE `Bug` (" +
                 "`Id` char(36) NOT NULL," +
-                "`EffortOriginalEstimate` int DEFAULT NULL," +
-                "`EffortRemaining` int DEFAULT NULL," +
-                "`EffortCompleted` int DEFAULT NULL," +
+                "`EffortOriginalEstimate` int NOT NULL," +
+                "`EffortRemaining` int NOT NULL," +
+                "`EffortCompleted` int NOT NULL," +
                 "`IntegratedInBuild` varchar(400) DEFAULT NULL," +
                 "`StoryPoints` int DEFAULT NULL," +
                 "`SeverityId` int NOT NULL," +

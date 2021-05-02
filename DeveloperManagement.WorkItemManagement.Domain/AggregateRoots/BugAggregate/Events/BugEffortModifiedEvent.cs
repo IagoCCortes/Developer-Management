@@ -5,15 +5,15 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggreg
 {
     public class BugEffortModifiedEvent : DomainEvent
     {
-        public int? OriginalEstimate { get; set; }
-        public int? Remaining { get; set; }
-        public int? Completed { get; set; }
+        public int OriginalEstimate { get; set; }
+        public int Remaining { get; set; }
+        public int Completed { get; set; }
 
         public BugEffortModifiedEvent(Effort effort)
         {
-            OriginalEstimate = effort?.OriginalEstimate;
-            Remaining = effort?.Remaining;
-            Completed = effort?.Completed;
+            OriginalEstimate = effort.OriginalEstimate;
+            Remaining = effort.Remaining;
+            Completed = effort.Completed;
         }
     }
 }

@@ -21,14 +21,15 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggreg
         {
         }
 
-        private Bug(string title, Guid teamId, Priority priority, StateReason stateReason, Priority severity) : base(
-            title,
-            teamId, priority)
+        private Bug(string title, Guid teamId, Priority priority, StateReason stateReason, Priority severity,
+            Effort effort) : base(title, teamId, priority)
         {
+            if (effort == null) throw new DomainException(nameof(Effort), "Effort cannot be empty");
             ValidateStateAndStateReason(WorkItemState.New, stateReason);
             State = WorkItemState.New;
             StateReason = stateReason;
             Severity = severity;
+            Effort = effort;
         }
 
         public void ModifyPlanning(int? storyPoints, Priority priority, Priority severity, Activity? activity)
@@ -50,10 +51,10 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggreg
             DomainEvents.Add(new BugInfoModifiedEvent(description, systemInfo, foundInBuild, integratedInBuild));
         }
 
-        public void ModifyEffort(Effort effort)
+        public void ModifyEffort(int remaining, int completed)
         {
-            Effort = effort;
-            DomainEvents.Add(new BugEffortModifiedEvent(effort));
+            Effort = new Effort(Effort.OriginalEstimate, remaining, completed);
+            DomainEvents.Add(new BugEffortModifiedEvent(Effort));
         }
 
         public void ModifyState(WorkItemState state, StateReason stateReason)
@@ -62,7 +63,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggreg
             StateReason = stateReason;
 
             if (state == WorkItemState.Closed && Effort != null)
-                ModifyEffort(new Effort(Effort.OriginalEstimate, 0, (Effort.Completed + Effort.Remaining)));
+                ModifyEffort(0, Effort.Completed + Effort.Remaining);
 
             base.ModifyState(state);
         }
@@ -94,16 +95,15 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggreg
 
         public class BugBuilder : WorkItemBuilder<Bug>
         {
-            public BugBuilder(string title, Guid teamId, Priority priority = Priority.Medium,
+            public BugBuilder(string title, Guid teamId, Effort effort, Priority priority = Priority.Medium,
                 StateReason stateReason = StateReason.New, Priority severity = Priority.Medium)
             {
-                WorkItem = new Bug(title, teamId, priority, stateReason, severity);
+                WorkItem = new Bug(title, teamId, priority, stateReason, severity, effort);
             }
 
-            public BugBuilder SetBugOptionalFields(Effort effort, string integratedInBuild, int? storyPoints,
+            public BugBuilder SetBugOptionalFields(string integratedInBuild, int? storyPoints,
                 string systemInfo, string foundInBuild)
             {
-                WorkItem.Effort = effort;
                 WorkItem.IntegratedInBuild = integratedInBuild;
                 WorkItem.StoryPoints = storyPoints;
                 WorkItem.SystemInfo = systemInfo;

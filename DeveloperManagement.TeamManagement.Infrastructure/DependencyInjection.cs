@@ -1,4 +1,11 @@
-﻿namespace DeveloperManagement.TeamManagement.Infrastructure
+﻿using DeveloperManagement.Core.Application.Interfaces;
+using DeveloperManagement.Core.Domain.Interfaces;
+using DeveloperManagement.TeamManagement.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace DeveloperManagement.TeamManagement.Infrastructure
 {
     public static class DependencyInjection
     {
@@ -14,9 +21,7 @@
                     b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
             }, ServiceLifetime.Scoped);
 
-            services.AddScoped<IWorkItemRepository, WorkItemRepository>();
-            services.AddScoped<IDomainEventService, DomainEventService>();
-            services.AddTransient<IDateTime, DateTimeService>();
+            // services.AddTransient<IDateTime, DateTimeService>();
             return services;
         }
     }

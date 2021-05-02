@@ -48,8 +48,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos
                 .GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] { }, null)
                 .Invoke(null);
             WorkItemDao.PopulateBaseWorkItem(bug, workItemDao, tags, attachments, relatedWorkDaos);
-            if (EffortOriginalEstimate.HasValue)
-                type.GetProperty("Effort").SetValue(bug,
+            type.GetProperty("Effort").SetValue(bug,
                     new Effort(EffortOriginalEstimate.Value, EffortRemaining!.Value, EffortCompleted!.Value));
             type.GetProperty("IntegratedInBuild").SetValue(bug, IntegratedInBuild);
             type.GetProperty("StoryPoints").SetValue(bug, StoryPoints);

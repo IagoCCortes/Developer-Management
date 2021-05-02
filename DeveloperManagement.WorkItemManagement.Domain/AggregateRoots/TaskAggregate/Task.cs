@@ -1,6 +1,5 @@
 ﻿using System;
 using DeveloperManagement.Core.Domain;
-using DeveloperManagement.Core.Domain.Extensions;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BaseWorkItemAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.TaskAggregate.Events;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
@@ -14,37 +13,39 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.TaskAggre
         public Effort Effort { get; private set; }
         public string IntegratedInBuild { get; private set; }
 
-        private Task(string title, Guid teamId, Priority priority) : base(title, teamId, priority)
+        private Task(string title, Guid teamId, Priority priority, Effort effort) : base(title, teamId, priority)
         {
+            if (effort == null) throw new DomainException(nameof(Effort), "Effort cannot be empty");
             State = WorkItemState.New;
             StateReason = StateReason.New;
+            Effort = effort;
         }
 
         public void ModifyState(WorkItemState state, StateReason stateReason)
         {
             ValidateStateAndStateReason(state, stateReason);
             StateReason = stateReason;
-            
+
             if (state == WorkItemState.Closed && Effort != null)
-                ModifyEffort(new Effort(Effort.OriginalEstimate, 0, Effort.Completed + Effort.Remaining));
-            
+                ModifyEffort(0, Effort.Completed + Effort.Remaining);
+
             base.ModifyState(state);
         }
-        
+
         public void ModifyPlanning(Priority priority, Activity? activity)
         {
             Priority = priority;
             Activity = activity;
-            
+
             DomainEvents.Add(new TaskPlanningModifiedEvent(priority, activity));
         }
 
-        public void ModifyEffort(Effort effort)
+        public void ModifyEffort(int remaining, int completed)
         {
-            Effort = effort;
-            DomainEvents.Add(new TaskEffortModifiedEvent(effort));
+            Effort = new Effort(Effort.OriginalEstimate, remaining, completed);
+            DomainEvents.Add(new TaskEffortModifiedEvent(Effort));
         }
-        
+
         public void SpecifyTaskInfo(string description, string integratedInBuild)
         {
             Description = description;
@@ -54,29 +55,30 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.TaskAggre
 
         private static void ValidateStateAndStateReason(WorkItemState state, StateReason stateReason)
         {
-            if (state == WorkItemState.Resolved)
-                throw new DomainException(nameof(State), $"A {nameof(Task)} does not have a {state} state");
+            var invalid = state switch
+            {
+                WorkItemState.New => stateReason != StateReason.New,
+                WorkItemState.Active => stateReason != StateReason.WorkStarted,
+                WorkItemState.Closed => stateReason != StateReason.Completed && stateReason != StateReason.Cut &&
+                                        stateReason != StateReason.Deferred && stateReason != StateReason.Obsolete,
+                WorkItemState.Removed => stateReason != StateReason.RemovedFromTheBacklog,
+                WorkItemState.Resolved => throw new DomainException(nameof(State),
+                    $"A {nameof(Task)} does not have a {state} state"),
+            };
 
-            var invalidNew = state == WorkItemState.New && stateReason != StateReason.New;
-            var invalidActive = state == WorkItemState.Active && stateReason != StateReason.WorkStarted;
-            var invalidClosed = state == WorkItemState.Closed && !stateReason.IsOneOf(StateReason.Completed,
-                StateReason.Cut, StateReason.Deferred, StateReason.Obsolete);
-            var invalidRemoved = state == WorkItemState.Removed && stateReason != StateReason.RemovedFromTheBacklog;
-
-            if (invalidNew || invalidActive || invalidClosed || invalidRemoved)
+            if (invalid)
                 throw new DomainException(nameof(StateReason), "Invalid reason for current state");
         }
-        
+
         public class TaskBuilder : WorkItemBuilder<Task>
         {
-            public TaskBuilder(string title, Guid teamId, Priority priority = Priority.Medium)
+            public TaskBuilder(string title, Guid teamId, Effort effort, Priority priority = Priority.Medium)
             {
-                WorkItem = new Task(title, teamId, priority);
+                WorkItem = new Task(title, teamId, priority, effort);
             }
 
-            public TaskBuilder SetTaskOptionalFields(Activity? activity, Effort effort, string integratedInBuild)
+            public TaskBuilder SetTaskOptionalFields(Activity? activity, string integratedInBuild)
             {
-                WorkItem.Effort = effort;
                 WorkItem.IntegratedInBuild = integratedInBuild;
                 WorkItem.Activity = activity;
                 return this;

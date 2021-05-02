@@ -11,6 +11,9 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Common.ValueObjects
         
         public Effort(int originalEstimate, int remaining, int completed)
         {
+            if (originalEstimate < 1)
+                throw new DomainException(nameof(OriginalEstimate), "An original estimate must be greater than 0");
+                
             OriginalEstimate = originalEstimate;
             Remaining = remaining;
             Completed = completed;

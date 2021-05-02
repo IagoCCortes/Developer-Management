@@ -28,9 +28,9 @@ namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.Creat
         public IEnumerable<AttachmentDto> Attachments { get; set; }
         public IEnumerable<RelatedWorkDto> RelatedWorks { get; set; }
 
-        public int? OriginalEstimate { get; set; }
-        public int? Remaining { get; set; }
-        public int? Completed { get; set; }
+        public int OriginalEstimate { get; set; }
+        public int Remaining { get; set; }
+        public int Completed { get; set; }
         public string IntegratedInBuild { get; set; }
         public int? StoryPoints { get; set; }
         public int SeverityId { get; set; }
@@ -53,16 +53,14 @@ namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.Creat
 
         public async Task<Guid> Handle(CreateBugCommand request, CancellationToken cancellationToken)
         {
-            var builder = new Bug.BugBuilder(request.Title, request.TeamId, (Priority) request.PriorityId,
+            var effort = new Effort(request.OriginalEstimate, request.Remaining, request.Completed);
+            var builder = new Bug.BugBuilder(request.Title, request.TeamId, effort, (Priority) request.PriorityId,
                 (StateReason) request.StateReasonId, (Priority) request.SeverityId);
 
             builder.SetWorkItemOptionalFields(request.Description, request.AssignedTo, request.SprintId,
                 String.IsNullOrWhiteSpace(request.RepoLink) ? null : new Link(request.RepoLink));
 
-            builder.SetBugOptionalFields(
-                request.OriginalEstimate.HasValue
-                    ? new Effort(request.OriginalEstimate.Value, request.Remaining!.Value, request.Completed!.Value)
-                    : null, request.IntegratedInBuild, request.StoryPoints, request.SystemInfo, request.FoundInBuild);
+            builder.SetBugOptionalFields(request.IntegratedInBuild, request.StoryPoints, request.SystemInfo, request.FoundInBuild);
 
             var now = _dateTime.UtcNow;
             foreach (var dto in request.RelatedWorks)

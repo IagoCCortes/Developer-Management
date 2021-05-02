@@ -11,5 +11,12 @@
         <property name="serverTimezone" value="UTC" />
       </driver-properties>
     </data-source>
+    <data-source source="LOCAL" name="sprint_management" uuid="86fc0825-8a7e-41d7-b332-41def8ecca3f">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/sprint_management</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

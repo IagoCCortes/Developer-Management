@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Interfaces;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Seed;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -40,31 +34,6 @@ namespace DeveloperManagement.WorkItemManagement.WebApi
                     throw;
                 }
             }
-
-            // using (var scope = host.Services.CreateScope())
-            // {
-            //     var services = scope.ServiceProvider;
-            //
-            //     try
-            //     {
-            //         var context = services.GetRequiredService<ApplicationDbContext>();
-            //
-            //         if (context.Database.IsMySql())
-            //         {
-            //             await context.Database.MigrateAsync();
-            //         }
-            //         // await ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
-            //         // await ApplicationDbContextSeed.SeedSampleDataAsync(context);
-            //     }
-            //     catch (Exception ex)
-            //     {
-            //         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-            //
-            //         logger.LogError(ex, "An error occurred while migrating or seeding the database.");
-            //
-            //         throw;
-            //     }
-            // }
 
             await host.RunAsync();
         }

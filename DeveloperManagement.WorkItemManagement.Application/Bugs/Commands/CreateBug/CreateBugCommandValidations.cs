@@ -21,11 +21,6 @@ namespace DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.Creat
             RuleFor(c => c.AssignedTo).AssignedTo();
             RuleFor(c => c.SprintId).SprintId();
             RuleFor(c => c.RepoLink).RepoLink();
-            RuleFor(c => new {c.OriginalEstimate, c.Remaining, c.Completed})
-                .Must(ao => ao.OriginalEstimate.HasValue && ao.Remaining.HasValue && ao.Completed.HasValue)
-                .When(c => c.OriginalEstimate.HasValue || c.Remaining.HasValue || c.Completed.HasValue)
-                .WithMessage(
-                    "When either 'Original Estimate', 'Remaining' or 'Completed' has a value all three must have a value");
             RuleForEach(c => c.Attachments).SetValidator(AttachmentDtoValidations.Validate().Filename().Path());
             RuleForEach(c => c.RelatedWorks).SetValidator(new RelatedWorkDtoValidations());
         }

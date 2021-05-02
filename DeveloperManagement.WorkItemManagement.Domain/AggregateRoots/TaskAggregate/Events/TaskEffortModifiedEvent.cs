@@ -5,9 +5,9 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.TaskAggre
 {
     public class TaskEffortModifiedEvent : DomainEvent
     {
-        public int? OriginalEstimate { get; set; }
-        public int? Remaining { get; set; }
-        public int? Completed { get; set; }
+        public int OriginalEstimate { get; set; }
+        public int Remaining { get; set; }
+        public int Completed { get; set; }
 
         public TaskEffortModifiedEvent(Effort effort)
         {
