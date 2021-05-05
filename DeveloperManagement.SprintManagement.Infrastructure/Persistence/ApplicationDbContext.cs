@@ -33,6 +33,7 @@ namespace DeveloperManagement.SprintManagement.Infrastructure.Persistence
         public DbSet<Sprint> Sprints { get; set; }
         public DbSet<WorkItem> WorkItems { get; set; }
         public DbSet<Capacity> Capacities { get; set; }
+        public DbSet<Activity> Activities { get; set; }
         
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -41,13 +42,13 @@ namespace DeveloperManagement.SprintManagement.Infrastructure.Persistence
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Property("created_by").CurrentValue = _currentUserService.UserId;
-                        entry.Property("created").CurrentValue = _dateTime.UtcNow;
+                        entry.Property("CreatedBy").CurrentValue = _currentUserService.UserId;
+                        entry.Property("Created").CurrentValue = _dateTime.UtcNow;
                         break;
 
                     case EntityState.Modified:
-                        entry.Property("last_modified_by").CurrentValue = _currentUserService.UserId;
-                        entry.Property("last_modified").CurrentValue = _dateTime.UtcNow;
+                        entry.Property("LastModifiedBy").CurrentValue = _currentUserService.UserId;
+                        entry.Property("LastModified").CurrentValue = _dateTime.UtcNow;
                         break;
                 }
             }

@@ -1,4 +1,5 @@
-﻿using DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggregate;
+﻿using System;
+using DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,6 +18,7 @@ namespace DeveloperManagement.SprintManagement.Infrastructure.Persistence.Config
                 a.Property(e => e.OriginalEstimate).HasColumnName("OriginalEstimate");
             });
             builder.Navigation(b => b.Effort).IsRequired();
+            builder.Property<Guid>("SprintId").IsRequired();
 
             builder.ConfigureEntityProperties();
         }

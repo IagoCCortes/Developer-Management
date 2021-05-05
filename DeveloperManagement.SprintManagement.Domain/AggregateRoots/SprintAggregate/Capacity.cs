@@ -8,15 +8,18 @@ namespace DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggre
     public class Capacity : Entity
     {
         public Activity Activity { get; private set; }
+        private int _activityId;
         public int CapacityPerDay { get; private set; }
         private readonly List<Period> _daysOff;
-        public ReadOnlyCollection<Period> DaysOff => _daysOff.AsReadOnly();
+        public IReadOnlyCollection<Period> DaysOff => _daysOff;
 
         private Capacity() {}
-        public Capacity(Guid id, Activity activity = Activity.Development, int capacityPerDay = 0) : base(id)
+        public Capacity(Activity activity, List<Period> daysOff, int capacityPerDay = 0)
         {
-            _daysOff = new List<Period>();
+            activity ??= Activity.Development;
+            _daysOff = daysOff;
             Activity = activity;
+            _activityId = activity.Id;
             CapacityPerDay = capacityPerDay;
         }
 

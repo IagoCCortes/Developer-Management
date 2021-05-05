@@ -11,8 +11,8 @@ namespace DeveloperManagement.SprintManagement.Infrastructure.Persistence.Config
             builder.HasKey(e => e.Id);
             builder.Property<DateTime>("Created").IsRequired();
             builder.Property<string>("CreatedBy").HasMaxLength(150).IsRequired();
-            builder.Property<DateTime>("LastModified");
-            builder.Property<string>("LastModifiedBy").HasMaxLength(150);
+            builder.Property<DateTime?>("LastModified");
+            builder.Property<string>("LastModifiedBy").HasMaxLength(150).IsRequired(false);
             return builder;
         }
     }

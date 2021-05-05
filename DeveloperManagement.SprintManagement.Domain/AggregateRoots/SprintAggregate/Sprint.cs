@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.Core.Domain.Interfaces;
@@ -15,14 +14,19 @@ namespace DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggre
         public WorkLoad WorkLoad { get; set; }
         public Guid TeamId { get; }
         private readonly List<WorkItem> _workItems;
-        public ReadOnlyCollection<WorkItem> WorkItems => _workItems.AsReadOnly();
+        public IReadOnlyCollection<WorkItem> WorkItems => _workItems;
         private readonly List<Capacity> _capacity;
-        public ReadOnlyCollection<Capacity> Capacity => _capacity.AsReadOnly();
+        public IReadOnlyCollection<Capacity> Capacity => _capacity;
         private List<DomainEvent> _domainEvents;
         public List<DomainEvent> DomainEvents => _domainEvents ??= new List<DomainEvent>();
 
-        private Sprint() {}
-        public Sprint(string name, Period period, Guid teamId)
+        private Sprint()
+        {
+            _capacity = new List<Capacity>();
+            _workItems = new List<WorkItem>();
+        }
+        
+        public Sprint(string name, Period period, Guid teamId) : this()
         {
             var errors = new Dictionary<string, string[]>();
             if (string.IsNullOrWhiteSpace(name))
@@ -40,8 +44,7 @@ namespace DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggre
             TeamId = teamId;
             WorkLoad = WorkLoad.EmptyWorkLoad();
 
-            _capacity = new List<Capacity>();
-            _workItems = new List<WorkItem>();
+            DomainEvents.Add(new SprintCreatedEvent(this));
         }
 
         public void AddWorkItem(WorkItem workItem)

@@ -1,6 +1,8 @@
 ﻿using DeveloperManagement.Core.Application.Interfaces;
 using DeveloperManagement.Core.Domain.Interfaces;
+using DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggregate;
 using DeveloperManagement.SprintManagement.Infrastructure.Persistence;
+using DeveloperManagement.SprintManagement.Infrastructure.Persistence.Repositories;
 using DeveloperManagement.SprintManagement.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +24,7 @@ namespace DeveloperManagement.SprintManagement.Infrastructure
                     b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
             }, ServiceLifetime.Scoped);
 
+            services.AddScoped<ISprintRepository, SprintRepository>();
             services.AddScoped<IDomainEventService, DomainEventService>();
             services.AddTransient<IDateTime, DateTimeService>();
             return services;

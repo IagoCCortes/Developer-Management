@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DeveloperManagement.SprintManagement.Infrastructure.Persistence;
+using DeveloperManagement.SprintManagement.Infrastructure.Persistence.Seed;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -30,8 +31,7 @@ namespace DeveloperManagement.SprintManagement.WebApi
                     {
                         await context.Database.MigrateAsync();
                     }
-                    // await ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
-                    // await ApplicationDbContextSeed.SeedSampleDataAsync(context);
+                    await ApplicationDbContextSeed.SeedDataAsync(context);
                 }
                 catch (Exception ex)
                 {

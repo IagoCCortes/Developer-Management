@@ -1,0 +1,15 @@
+﻿{
+  "id": "ce06f10b-7b31-40fc-adca-555f29db97e5",
+  "activityId": 4,
+  "capacityPerDay": 6,
+  "daysOff": [
+    {
+      "initialDateTime": "2021-05-10T10:10:34.197Z",
+      "finalDateTime": "2021-05-11T10:10:34.197Z"
+    },
+    {
+      "initialDateTime": "2021-05-18T10:10:34.197Z",
+      "finalDateTime": "2021-05-20T10:10:34.197Z"
+    }
+  ]
+}

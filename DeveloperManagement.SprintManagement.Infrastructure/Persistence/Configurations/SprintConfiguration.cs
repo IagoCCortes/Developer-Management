@@ -28,8 +28,11 @@ namespace DeveloperManagement.SprintManagement.Infrastructure.Persistence.Config
             builder.Navigation(b => b.Period).IsRequired();
             builder.Property(b => b.TeamId).IsRequired();
             
-            builder.HasMany(b => b.WorkItems);
-            builder.HasMany(b => b.Capacity);
+            var workItemNavigation = builder.Metadata.FindNavigation(nameof(Sprint.WorkItems));
+            workItemNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
+            
+            var capacityNavigation = builder.Metadata.FindNavigation(nameof(Sprint.Capacity));
+            capacityNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
 
             builder.ConfigureEntityProperties();
         }

@@ -6,8 +6,8 @@ namespace DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggre
 {
     public class Period : ValueObject
     {
-        public DateTime InitialDateTime { get; }
-        public DateTime FinalDateTime { get; }
+        public DateTime InitialDateTime { get; private set; }
+        public DateTime FinalDateTime { get; private set; }
 
         private Period() {}
         public Period(DateTime initialDateTime, DateTime finalDateTime)
