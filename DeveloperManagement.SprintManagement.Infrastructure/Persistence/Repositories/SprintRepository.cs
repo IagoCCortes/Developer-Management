@@ -25,28 +25,26 @@ namespace DeveloperManagement.SprintManagement.Infrastructure.Persistence.Reposi
 
         public async Task<Sprint> GetAsync(Guid id)
         {
-            var sprint = await _context.Sprints.Include(x => x.Period)
+            var sprint = await _context.Sprints
+                .Include(x => x.Period)
+                .Include(x => x.Capacity)
+                .ThenInclude(c => c.Activity)
                 .FirstOrDefaultAsync(s => s.Id == id);
-            
-            if (sprint == null)
-            {
-                sprint = _context
-                    .Sprints
-                    .Local
-                    .FirstOrDefault(s => s.Id == id);
-            }
-            // if (sprint != null)
-            // {
-            //     await _context.Entry(sprint)
-            //         .Collection(i => i.Capacity).LoadAsync();
-            // }
 
             return sprint;
         }
 
-        public void Update(Sprint sprint)
+        public void AddCapacity()
         {
-            _context.Entry(sprint).State = EntityState.Modified;
+            var activities = _context.ChangeTracker.Entries<Activity>()
+                .Where(c => c.State != EntityState.Unchanged);
+            foreach (var activity in activities)
+                activity.State = EntityState.Unchanged;
+            
+            var capacities = _context.ChangeTracker.Entries<Capacity>()
+                .Where(c => c.State == EntityState.Modified);
+            foreach (var capacity in capacities)
+                capacity.State = EntityState.Added;
         }
     }
 }

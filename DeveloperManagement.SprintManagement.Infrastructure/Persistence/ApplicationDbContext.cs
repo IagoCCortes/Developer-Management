@@ -6,7 +6,6 @@ using DeveloperManagement.Core.Application.Interfaces;
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.Core.Domain.Interfaces;
 using DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggregate;
-using DeveloperManagement.SprintManagement.Domain.Common;
 using DeveloperManagement.SprintManagement.Domain.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
