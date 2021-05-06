@@ -8,8 +8,8 @@ namespace DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggre
     {
         Sprint Add(Sprint order);
 
-        void AddCapacity();
-
         Task<Sprint> GetAsync(Guid sprintId);
+
+        void UpdateAddCapacityChangeTracker();
     }
 }

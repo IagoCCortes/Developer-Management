@@ -3,6 +3,7 @@ using DeveloperManagement.Core.Domain.Interfaces;
 using DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggregate;
 using DeveloperManagement.SprintManagement.Infrastructure.Persistence;
 using DeveloperManagement.SprintManagement.Infrastructure.Persistence.Repositories;
+using DeveloperManagement.SprintManagement.Infrastructure.Persistence.Repositories.SprintAR;
 using DeveloperManagement.SprintManagement.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

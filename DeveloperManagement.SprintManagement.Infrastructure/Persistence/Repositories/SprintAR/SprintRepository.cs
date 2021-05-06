@@ -5,7 +5,7 @@ using DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggregate
 using DeveloperManagement.SprintManagement.Domain.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace DeveloperManagement.SprintManagement.Infrastructure.Persistence.Repositories
+namespace DeveloperManagement.SprintManagement.Infrastructure.Persistence.Repositories.SprintAR
 {
     public class SprintRepository : ISprintRepository
     {
@@ -34,17 +34,13 @@ namespace DeveloperManagement.SprintManagement.Infrastructure.Persistence.Reposi
             return sprint;
         }
 
-        public void AddCapacity()
+        public void UpdateAddCapacityChangeTracker()
         {
             var activities = _context.ChangeTracker.Entries<Activity>()
-                .Where(c => c.State != EntityState.Unchanged);
-            foreach (var activity in activities)
-                activity.State = EntityState.Unchanged;
+                .First(c => c.State != EntityState.Unchanged).State = EntityState.Unchanged;
             
             var capacities = _context.ChangeTracker.Entries<Capacity>()
-                .Where(c => c.State == EntityState.Modified);
-            foreach (var capacity in capacities)
-                capacity.State = EntityState.Added;
+                .First(c => c.State == EntityState.Modified).State = EntityState.Added;
         }
     }
 }

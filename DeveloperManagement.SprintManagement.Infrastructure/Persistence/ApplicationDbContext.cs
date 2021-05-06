@@ -36,6 +36,8 @@ namespace DeveloperManagement.SprintManagement.Infrastructure.Persistence
         
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
+            await DispatchEvents(cancellationToken);
+            
             foreach (var entry in ChangeTracker.Entries<Entity>())
             {
                 switch (entry.State)
@@ -54,14 +56,7 @@ namespace DeveloperManagement.SprintManagement.Infrastructure.Persistence
 
             var result = await base.SaveChangesAsync(cancellationToken);
 
-            await DispatchEvents(cancellationToken);
-
             return result;
-        }
-
-        public Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            throw new System.NotImplementedException();
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

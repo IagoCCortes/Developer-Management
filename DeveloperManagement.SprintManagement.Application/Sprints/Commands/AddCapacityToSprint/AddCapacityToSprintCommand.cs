@@ -38,7 +38,7 @@ namespace DeveloperManagement.SprintManagement.Application.Sprints.Commands.AddC
                 request.CapacityPerDay);
 
             sprint.AddCapacity(capacity);
-            _repository.AddCapacity();
+            _repository.UpdateAddCapacityChangeTracker();
             await _repository.UnitOfWork.SaveChangesAsync(cancellationToken);
             return Unit.Value;
         }

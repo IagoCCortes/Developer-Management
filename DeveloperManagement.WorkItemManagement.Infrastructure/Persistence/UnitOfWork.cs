@@ -38,6 +38,8 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence
 
         public async Task<int> SaveChangesAsync()
         {
+            await DispatchEvents();
+            
             using var connection = await _connectionFactory.CreateConnectionAsync();
             using var transaction = connection.BeginTransaction();
             var affectedRows = 0;
@@ -60,8 +62,6 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence
             }
 
             transaction.Commit();
-
-            await DispatchEvents();
 
             return affectedRows;
         }
