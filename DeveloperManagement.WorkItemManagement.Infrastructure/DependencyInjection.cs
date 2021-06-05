@@ -1,5 +1,4 @@
-﻿using Autofac;
-using DeveloperManagement.Core.Application.Interfaces;
+﻿using DeveloperManagement.Core.Application.Interfaces;
 using DeveloperManagement.Core.Domain.Interfaces;
 using DeveloperManagement.WorkItemManagement.Application.Interfaces;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;
@@ -7,21 +6,15 @@ using DeveloperManagement.WorkItemManagement.Infrastructure.MimeType;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Interfaces;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Services;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DeveloperManagement.WorkItemManagement.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services,
-            IConfiguration configuration)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)
         {
-            var connectionString = configuration.GetSection("DapperSettings").GetSection("ConnectionString").Value;
             services.AddSingleton<IDapperConnectionFactory>(new DapperConnectionFactory(connectionString));
-            // var builder = new ContainerBuilder();
-            // builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().UsingConstructor(typeof(IDapperConnectionFactory),
-            //     typeof(IDomainEventService), typeof(ICurrentUserService), typeof(IDateTime));
             services.AddScoped<IUnitOfWork>(provider => new UnitOfWork(
                 provider.GetRequiredService<IDapperConnectionFactory>(),
                 provider.GetRequiredService<IDomainEventService>(),

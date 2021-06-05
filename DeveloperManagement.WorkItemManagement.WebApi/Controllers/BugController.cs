@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.ChangeState;
-using DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.CreateBug;
-using DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.ModifyBugPlanning;
-using DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.ModifyEffort;
-using DeveloperManagement.WorkItemManagement.Application.Bugs.Commands.SpecifyBugInfo;
-using DeveloperManagement.WorkItemManagement.Application.Bugs.Queries.GetBugById;
+using DeveloperManagement.WorkItemManagement.Application.Commands.ChangeState;
+using DeveloperManagement.WorkItemManagement.Application.Commands.CreateBug;
+using DeveloperManagement.WorkItemManagement.Application.Commands.ModifyBugPlanning;
+using DeveloperManagement.WorkItemManagement.Application.Commands.ModifyEffort;
+using DeveloperManagement.WorkItemManagement.Application.Commands.SpecifyBugInfo;
+using DeveloperManagement.WorkItemManagement.Application.Queries.GetBugById;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeveloperManagement.WorkItemManagement.WebApi.Controllers

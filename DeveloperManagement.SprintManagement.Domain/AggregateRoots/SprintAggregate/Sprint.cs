@@ -25,7 +25,7 @@ namespace DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggre
             _capacity = new List<Capacity>();
             _workItems = new List<WorkItem>();
         }
-        
+
         public Sprint(string name, Period period, Guid teamId) : this()
         {
             var errors = new Dictionary<string, string[]>();
@@ -56,7 +56,7 @@ namespace DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggre
             var completed = WorkLoad.CompletedWorkHours + workItem.Effort.Completed;
             var completedPercentage = 100 * completed / (remaining + completed);
             WorkLoad = new WorkLoad(completedPercentage, remaining, completed, originalEstimate);
-                
+
 
             DomainEvents.Add(new AddedWorkItemToSprint(Id, workItem.Id, workItem.Effort.OriginalEstimate,
                 workItem.Effort.Remaining, workItem.Effort.Completed));
@@ -68,14 +68,14 @@ namespace DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggre
                 throw new DomainException(nameof(Name), $"{nameof(Name)} must not be empty");
 
             Name = name;
-            DomainEvents.Add(new SprintFieldModifiedEvent<string>(nameof(Name), name));
+            DomainEvents.Add(new SprintNameModifiedEvent(Id, name));
         }
 
         public void ModifySprintPeriod(Period period)
         {
             Period = period ??
                      throw new DomainException(nameof(Period), $"{nameof(Period)} must not be empty");
-            DomainEvents.Add(new SprintFieldModifiedEvent<Period>(nameof(Period), period));
+            DomainEvents.Add(new SprintPeriodModifiedEvent(Id, period.InitialDateTime, period.FinalDateTime));
         }
 
         public void AddCapacity(Capacity capacity)
@@ -83,6 +83,13 @@ namespace DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggre
             if (capacity == null)
                 throw new DomainException(nameof(SprintAggregate.Capacity),
                     $"{nameof(SprintAggregate.Capacity)} must not be empty");
+
+            foreach (var period in capacity.DaysOff)
+            {
+                if (!period.IsPeriodContainedIn(this.Period))
+                    throw new DomainException(nameof(Capacity),
+                        "A capacity's days off period must be within the current string period.");
+            }
 
             _capacity.Add(capacity);
             DomainEvents.Add(new AddedCapacityToSprint(capacity));

@@ -9,13 +9,19 @@ namespace DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggre
         public DateTime InitialDateTime { get; private set; }
         public DateTime FinalDateTime { get; private set; }
 
-        private Period() {}
+        private Period()
+        {
+        }
+
         public Period(DateTime initialDateTime, DateTime finalDateTime)
         {
             InitialDateTime = initialDateTime;
             FinalDateTime = finalDateTime;
         }
-        
+
+        public bool IsPeriodContainedIn(Period period) => period.InitialDateTime <= this.InitialDateTime &&
+                                                          period.FinalDateTime >= this.FinalDateTime;
+
         protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return InitialDateTime;

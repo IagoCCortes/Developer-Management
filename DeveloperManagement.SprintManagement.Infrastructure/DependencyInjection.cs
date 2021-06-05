@@ -14,11 +14,10 @@ namespace DeveloperManagement.SprintManagement.Infrastructure
     public static class DependencyInjection
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services,
-            IConfiguration configuration)
+            string connectionString)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                var connectionString = configuration.GetSection("EfSettings").GetSection("ConnectionString").Value;
                 options.UseMySql(
                     connectionString,
                     ServerVersion.AutoDetect(connectionString),

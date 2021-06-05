@@ -5,11 +5,13 @@ using Dapper;
 using DeveloperManagement.Core.Application.Interfaces;
 using DeveloperManagement.Core.Domain.Interfaces;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.TaskAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Helper;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Interfaces;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repositories;
+using Task = System.Threading.Tasks.Task;
 
 namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence
 {
@@ -22,8 +24,10 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence
         private readonly List<(string sql, DatabaseEntity dbEntity, OperationType operationType)> _changes;
 
         private BugRepository _bugRepository;
+        private TaskRepository _taskRepository;
 
         public IBugRepository BugRepository => _bugRepository ??= new BugRepository(_connectionFactory, _changes);
+        public ITaskRepository TaskRepository => _taskRepository ??= new TaskRepository(_changes);
 
         public UnitOfWork(IDapperConnectionFactory connectionFactory,
             IDomainEventService domainEventService,

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DeveloperManagement.SprintManagement.Application.Sprints.Commands.AddCapacityToSprint;
-using DeveloperManagement.SprintManagement.Application.Sprints.Commands.CreateSprint;
-using DeveloperManagement.SprintManagement.Application.Sprints.Queries.GetSprintById;
+using DeveloperManagement.SprintManagement.Application.Commands.AddCapacityToSprint;
+using DeveloperManagement.SprintManagement.Application.Commands.CreateSprint;
+using DeveloperManagement.SprintManagement.Application.Queries.GetSprintById;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeveloperManagement.SprintManagement.WebApi.Controllers

@@ -1,14 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using DeveloperManagement.Core.Application.Interfaces;
 using DeveloperManagement.WorkItemManagement.Application;
 using DeveloperManagement.WorkItemManagement.Infrastructure;
 using DeveloperManagement.WorkItemManagement.WebApi.Configurations;
 using DeveloperManagement.WorkItemManagement.WebApi.Filters;
 using DeveloperManagement.WorkItemManagement.WebApi.Services;
+using EventBus;
+using EventBus.Abstractions;
+using EventBusRabbitMQ;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,7 +15,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using RabbitMQ.Client;
 
 namespace DeveloperManagement.WorkItemManagement.WebApi
 {
@@ -32,17 +33,14 @@ namespace DeveloperManagement.WorkItemManagement.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApplication();
-            services.AddInfrastructure(Configuration);
+            services
+                .AddApplication()
+                .AddInfrastructure(Configuration.GetSection("DapperSettings").GetSection("ConnectionString").Value);
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
-
             services.AddHttpContextAccessor();
-
             services.AddRouting(options => options.LowercaseUrls = true);
-
             services.AddHealthChecks();
-
             services.AddControllers(options =>
                 {
                     options.UseCentralRoutePrefix(new RouteAttribute("api/v{version}"));
@@ -69,6 +67,8 @@ namespace DeveloperManagement.WorkItemManagement.WebApi
 
             // Customise default API behaviour
             services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
+
+            services.AddCustomIntegrations(Configuration).AddEventBus(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -85,6 +85,69 @@ namespace DeveloperManagement.WorkItemManagement.WebApi
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+    }
+
+    public static class CustomExtensionMethods
+    {
+        public static IServiceCollection AddCustomIntegrations(this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+            {
+                var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+
+
+                var factory = new ConnectionFactory()
+                {
+                    Uri = new Uri(configuration["EventBusConnection"]),
+                    DispatchConsumersAsync = true
+                };
+
+                if (!string.IsNullOrEmpty(configuration["EventBusUserName"]))
+                {
+                    factory.UserName = configuration["EventBusUserName"];
+                }
+
+                if (!string.IsNullOrEmpty(configuration["EventBusPassword"]))
+                {
+                    factory.Password = configuration["EventBusPassword"];
+                }
+
+                var retryCount = 5;
+                if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
+                {
+                    retryCount = int.Parse(configuration["EventBusRetryCount"]);
+                }
+
+                return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
+            });
+
+            return services;
+        }
+
+        public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddSingleton<IEventBus, EventBusRabbitMQ.EventBusRabbitMQ>(sp =>
+            {
+                var subscriptionClientName = configuration["SubscriptionClientName"];
+                var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+                var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ.EventBusRabbitMQ>>();
+                var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+
+                var retryCount = 5;
+                if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
+                {
+                    retryCount = int.Parse(configuration["EventBusRetryCount"]);
+                }
+
+                return new EventBusRabbitMQ.EventBusRabbitMQ(rabbitMQPersistentConnection, logger,
+                    eventBusSubcriptionsManager, subscriptionClientName, retryCount);
+            });
+
+            services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
+
+            return services;
         }
     }
 }
