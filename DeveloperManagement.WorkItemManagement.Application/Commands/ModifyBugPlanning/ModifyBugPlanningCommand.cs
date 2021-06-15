@@ -19,9 +19,9 @@ namespace DeveloperManagement.WorkItemManagement.Application.Commands.ModifyBugP
 
     public class ModifyBugPlanningCommandHandler : IRequestHandler<ModifyBugPlanningCommand>
     {
-        private readonly IUnitOfWork _uow;
+        private readonly IDomainUnitOfWork _uow;
 
-        public ModifyBugPlanningCommandHandler(IUnitOfWork uow)
+        public ModifyBugPlanningCommandHandler(IDomainUnitOfWork uow)
         {
             _uow = uow;
         }

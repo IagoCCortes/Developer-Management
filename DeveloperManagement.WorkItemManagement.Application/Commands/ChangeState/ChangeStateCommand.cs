@@ -17,9 +17,9 @@ namespace DeveloperManagement.WorkItemManagement.Application.Commands.ChangeStat
     
     public class ChangeStateCommandHandler : IRequestHandler<ChangeStateCommand>
     {
-        private readonly IUnitOfWork _uow;
+        private readonly IDomainUnitOfWork _uow;
 
-        public ChangeStateCommandHandler(IUnitOfWork uow)
+        public ChangeStateCommandHandler(IDomainUnitOfWork uow)
         {
             _uow = uow;
         }

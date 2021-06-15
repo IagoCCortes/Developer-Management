@@ -18,9 +18,9 @@ namespace DeveloperManagement.WorkItemManagement.Application.Commands.SpecifyBug
     
     public class SpecifyBugInfoCommandHandler : IRequestHandler<SpecifyBugInfoCommand>
     {
-        private readonly IUnitOfWork _uow;
+        private readonly IDomainUnitOfWork _uow;
 
-        public SpecifyBugInfoCommandHandler(IUnitOfWork uow)
+        public SpecifyBugInfoCommandHandler(IDomainUnitOfWork uow)
         {
             _uow = uow;
         }

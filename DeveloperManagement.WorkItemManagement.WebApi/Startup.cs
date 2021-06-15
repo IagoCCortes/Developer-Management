@@ -1,4 +1,6 @@
 using System;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using DeveloperManagement.Core.Application.Interfaces;
 using DeveloperManagement.WorkItemManagement.Application;
 using DeveloperManagement.WorkItemManagement.Infrastructure;
@@ -31,7 +33,7 @@ namespace DeveloperManagement.WorkItemManagement.WebApi
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services
                 .AddApplication()
@@ -69,6 +71,11 @@ namespace DeveloperManagement.WorkItemManagement.WebApi
             services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
 
             services.AddCustomIntegrations(Configuration).AddEventBus(Configuration);
+            
+            var container = new ContainerBuilder();
+            container.Populate(services);
+
+            return new AutofacServiceProvider(container.Build());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -132,6 +139,7 @@ namespace DeveloperManagement.WorkItemManagement.WebApi
             {
                 var subscriptionClientName = configuration["SubscriptionClientName"];
                 var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+                var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
                 var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ.EventBusRabbitMQ>>();
                 var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
 
@@ -142,7 +150,7 @@ namespace DeveloperManagement.WorkItemManagement.WebApi
                 }
 
                 return new EventBusRabbitMQ.EventBusRabbitMQ(rabbitMQPersistentConnection, logger,
-                    eventBusSubcriptionsManager, subscriptionClientName, retryCount);
+                    iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
             });
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();

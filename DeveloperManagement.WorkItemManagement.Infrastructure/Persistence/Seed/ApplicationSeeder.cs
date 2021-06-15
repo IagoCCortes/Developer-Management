@@ -8,6 +8,8 @@ using Dapper;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.CommentAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Interfaces;
+using EventBus;
+using EventBus.Events;
 
 namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Seed
 {
@@ -23,6 +25,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Seed
             {nameof(WorkItemState), typeof(WorkItemState)},
             {nameof(WorkItemType), typeof(WorkItemType)},
             {nameof(Reactiontype), typeof(Reactiontype)},
+            {nameof(EventState), typeof(EventState)}
         };
 
         private readonly IDapperConnectionFactory _factory;
@@ -217,6 +220,23 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Seed
                 "ALTER TABLE `Tag` " +
                 "ADD CONSTRAINT `fk_Tag_WorkItem_Id` FOREIGN KEY(`" +
                 "WorkItemId`) REFERENCES `WorkItem` (`Id`);", transaction: transaction);
+            
+            await connection.ExecuteAsync(
+                "CREATE TABLE `IntegrationEventLogEntry` (" +
+                "`Id` char(36) NOT NULL," +
+                "`EventTypeName` varchar(250) Not NULL," +
+                "`EventStateId` int NOT NULL," +
+                "`TimesSent` int NOT NULL," +
+                "`CreationTime` datetime NOT NULL," +
+                "`Content` varchar(4000) DEFAULT NULL," +
+                "`TransactionId` char(36) NOT NULL," +
+                "PRIMARY KEY (`Id`)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", transaction: transaction);
+            
+            await connection.ExecuteAsync(
+                "ALTER TABLE `IntegrationEventLogEntry` " +
+                "ADD CONSTRAINT `fk_IntegrationEventLogEntry_EventState_Id` FOREIGN KEY(`" +
+                "EventStateId`) REFERENCES `EventState` (`Id`);", transaction: transaction);
         }
 
         private async Task SeedEnumTables(IDbConnection connection, IDbTransaction transaction)

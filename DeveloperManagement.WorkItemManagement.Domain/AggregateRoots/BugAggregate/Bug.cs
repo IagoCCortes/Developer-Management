@@ -1,5 +1,6 @@
 ﻿using System;
 using DeveloperManagement.Core.Domain;
+using DeveloperManagement.Core.Domain.Extensions;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BaseWorkItemAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate.Events;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
@@ -72,19 +73,14 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggreg
         {
             var invalid = state switch
             {
-                WorkItemState.New => stateReason != StateReason.New && StateReason != StateReason.BuildFailure,
-                WorkItemState.Active => stateReason != StateReason.Approved && stateReason != StateReason.Investigate,
-                WorkItemState.Resolved => stateReason != StateReason.Fixed && StateReason != StateReason.AsDesigned &&
-                                          StateReason != StateReason.CannotReproduce &&
-                                          StateReason != StateReason.CopiedToBacklog &&
-                                          StateReason != StateReason.Deferred && StateReason != StateReason.Duplicate &&
-                                          StateReason != StateReason.Obsolete,
-                WorkItemState.Closed => stateReason != StateReason.FixedAndVerified &&
-                                        StateReason != StateReason.AsDesigned &&
-                                        StateReason != StateReason.CannotReproduce &&
-                                        StateReason != StateReason.CopiedToBacklog &&
-                                        StateReason != StateReason.Deferred && StateReason != StateReason.Duplicate &&
-                                        StateReason != StateReason.Obsolete,
+                WorkItemState.New => !stateReason.IsOneOf(StateReason.New, StateReason.BuildFailure),
+                WorkItemState.Active => !stateReason.IsOneOf(StateReason.Approved, StateReason.Investigate),
+                WorkItemState.Resolved => !stateReason.IsOneOf(StateReason.Fixed, StateReason.AsDesigned,
+                    StateReason.CannotReproduce, StateReason.CopiedToBacklog, StateReason.Deferred,
+                    StateReason.Duplicate, StateReason.Obsolete),
+                WorkItemState.Closed => !stateReason.IsOneOf(StateReason.FixedAndVerified, StateReason.AsDesigned,
+                    StateReason.CannotReproduce, StateReason.CopiedToBacklog, StateReason.Deferred,
+                    StateReason.Duplicate, StateReason.Obsolete),
                 WorkItemState.Removed => throw new DomainException(nameof(State),
                     $"A {nameof(Bug)} does not have a {state} state")
             };

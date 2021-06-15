@@ -11,6 +11,7 @@
       <ProjectReference Include="..\DeveloperManagement.Core.RabbitMQ\DeveloperManagement.Core.RabbitMQ.csproj" />
       <ProjectReference Include="..\DeveloperManagement.WorkItemManagement.Domain\DeveloperManagement.WorkItemManagement.Domain.csproj" />
       <ProjectReference Include="..\EventBusRabbitMQ\EventBusRabbitMQ.csproj" />
+      <ProjectReference Include="..\IntegrationEventLogDapper\IntegrationEventLogDapper.csproj" />
     </ItemGroup>
 
     <ItemGroup>

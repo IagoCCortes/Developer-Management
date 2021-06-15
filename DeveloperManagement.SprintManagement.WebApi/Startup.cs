@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Autofac.Features.ResolveAnything;
 using DeveloperManagement.Core.Application.Interfaces;
 using DeveloperManagement.SprintManagement.Application;
 using DeveloperManagement.SprintManagement.Application.IntegrationEvents.Events;
@@ -37,7 +40,7 @@ namespace DeveloperManagement.SprintManagement.WebApi
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services
                 .AddApplication()
@@ -75,6 +78,12 @@ namespace DeveloperManagement.SprintManagement.WebApi
             services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
             
             services.AddCustomIntegrations(Configuration).AddEventBus(Configuration);
+            
+            var container = new ContainerBuilder();
+            container.Populate(services);
+            container.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
+
+            return new AutofacServiceProvider(container.Build());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -147,6 +156,7 @@ namespace DeveloperManagement.SprintManagement.WebApi
             {
                 var subscriptionClientName = configuration["SubscriptionClientName"];
                 var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+                var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
                 var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ.EventBusRabbitMQ>>();
                 var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
 
@@ -157,7 +167,7 @@ namespace DeveloperManagement.SprintManagement.WebApi
                 }
 
                 return new EventBusRabbitMQ.EventBusRabbitMQ(rabbitMQPersistentConnection, logger,
-                    eventBusSubcriptionsManager, subscriptionClientName, retryCount);
+                    iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
             });
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();

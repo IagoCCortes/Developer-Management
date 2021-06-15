@@ -14,9 +14,9 @@ namespace DeveloperManagement.WorkItemManagement.Application.Queries.GetBugById
     
     public class GetBugByIdQueryHandler : IRequestHandler<GetBugByIdQuery, Bug>
     {
-        private readonly IUnitOfWork _uow;
+        private readonly IDomainUnitOfWork _uow;
 
-        public GetBugByIdQueryHandler(IUnitOfWork uow)
+        public GetBugByIdQueryHandler(IDomainUnitOfWork uow)
         {
             _uow = uow;
         }

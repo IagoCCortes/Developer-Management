@@ -10,9 +10,9 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
 {
     public abstract class GenericAggregateRepository<T> : IGenericWriteRepository<T> where T : IAggregateRoot
     {
-        protected readonly List<(string sql, DatabaseEntity dbEntity, OperationType operationType)> Changes;
+        protected readonly List<DatabaseOperationData> Changes;
 
-        protected GenericAggregateRepository(List<(string sql, DatabaseEntity dbEntity, OperationType operationType)> changes)
+        protected GenericAggregateRepository(List<DatabaseOperationData> changes)
         {
             Changes = changes;
         }

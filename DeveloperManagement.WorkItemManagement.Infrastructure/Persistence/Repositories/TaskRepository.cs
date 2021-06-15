@@ -8,7 +8,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
 {
     public class TaskRepository : GenericAggregateRepository<Task>, ITaskRepository
     {
-        public TaskRepository(List<(string sql, DatabaseEntity dbEntity, OperationType operationType)> changes) : base(changes)
+        public TaskRepository(List<DatabaseOperationData> changes) : base(changes)
         {
         }
 

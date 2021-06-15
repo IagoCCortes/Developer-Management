@@ -15,10 +15,10 @@ namespace DeveloperManagement.WorkItemManagement.Application.Commands.AddComment
     
     public class AddCommentCommandHandler : IRequestHandler<AddCommentCommand>
     {
-        private readonly IUnitOfWork _uow;
+        private readonly IDomainUnitOfWork _uow;
         private readonly ICurrentUserService _userService;
 
-        public AddCommentCommandHandler(IUnitOfWork uow, ICurrentUserService userService)
+        public AddCommentCommandHandler(IDomainUnitOfWork uow, ICurrentUserService userService)
         {
             _uow = uow;
             _userService = userService;

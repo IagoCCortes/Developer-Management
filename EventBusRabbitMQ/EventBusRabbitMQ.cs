@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Autofac;
 using EventBus;
 using EventBus.Abstractions;
 using EventBus.Events;
@@ -19,17 +20,19 @@ namespace EventBusRabbitMQ
     public class EventBusRabbitMQ : IEventBus, IDisposable
     {
         const string BROKER_NAME = "developer_management";
+        const string AUTOFAC_SCOPE_NAME = "developer_management";
 
         private readonly IRabbitMQPersistentConnection _persistentConnection;
         private readonly ILogger<EventBusRabbitMQ> _logger;
         private readonly IEventBusSubscriptionsManager _subsManager;
+        private readonly ILifetimeScope _autofac;
         private readonly int _retryCount;
 
         private IModel _consumerChannel;
         private string _queueName;
 
         public EventBusRabbitMQ(IRabbitMQPersistentConnection persistentConnection, ILogger<EventBusRabbitMQ> logger,
-            IEventBusSubscriptionsManager subsManager, string queueName = null,
+            ILifetimeScope autofac, IEventBusSubscriptionsManager subsManager, string queueName = null,
             int retryCount = 5)
         {
             _persistentConnection =
@@ -38,6 +41,7 @@ namespace EventBusRabbitMQ
             _subsManager = subsManager ?? new InMemoryEventBusSubscriptionsManager();
             _queueName = queueName;
             _consumerChannel = CreateConsumerChannel();
+            _autofac = autofac;
             _retryCount = retryCount;
             _subsManager.OnEventRemoved += SubsManager_OnEventRemoved;
         }
@@ -246,10 +250,11 @@ namespace EventBusRabbitMQ
 
             if (_subsManager.HasSubscriptionsForEvent(eventName))
             {
+                using var scope = _autofac.BeginLifetimeScope(AUTOFAC_SCOPE_NAME);
                 var subscriptions = _subsManager.GetHandlersForEvent(eventName);
                 foreach (var subscription in subscriptions)
                 {
-                    var handler = (IIntegrationEventHandler) Activator.CreateInstance(subscription.HandlerType);
+                    var handler = scope.ResolveOptional(subscription.HandlerType);
                     if (handler == null) continue;
                     var eventType = _subsManager.GetEventTypeByName(eventName);
                     var integrationEvent = JsonSerializer.Deserialize(message, eventType,

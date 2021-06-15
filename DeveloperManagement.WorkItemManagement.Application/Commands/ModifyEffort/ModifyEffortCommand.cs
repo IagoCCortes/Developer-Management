@@ -16,9 +16,9 @@ namespace DeveloperManagement.WorkItemManagement.Application.Commands.ModifyEffo
 
     public class ModifyEffortCommandHandler : IRequestHandler<ModifyEffortCommand>
     {
-        private readonly IUnitOfWork _uow;
+        private readonly IDomainUnitOfWork _uow;
 
-        public ModifyEffortCommandHandler(IUnitOfWork uow)
+        public ModifyEffortCommandHandler(IDomainUnitOfWork uow)
         {
             _uow = uow;
         }

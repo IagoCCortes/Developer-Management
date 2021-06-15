@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Text;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos;
+using EventBus;
 
 namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Helper
 {
@@ -25,6 +26,14 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Help
             sqlBuilder.Append($") VALUES ({valuesBuilder});");
 
             return sqlBuilder.ToString();
+        }
+
+        public static string BuildIntegrationEventLogEntryInsertStatement(this IntegrationEventLogEntry eventLogEntry)
+        {
+            return 
+                "INSERT INTO IntegrationEventLogEntry " +
+                    "(Id, EventTypeName, EventStateId, TimesSent, CreationTime, Content, TransactionId) " +
+                "VALUES (@Id, @EventTypeName, @EventStateId, @TimesSent, @CreationTime, @Content, @TransactionId);";
         }
 
         public static string BuildUpdateStatement(string tableName, string conditionColumn, params string[] columns)
