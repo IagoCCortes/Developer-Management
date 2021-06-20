@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentValidation;
 
-namespace DeveloperManagement.Core.Application
+namespace DeveloperManagement.Core.Application.Validations
 {
     public static class ValidationExtensions
     {

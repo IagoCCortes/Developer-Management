@@ -31,13 +31,7 @@ namespace DeveloperManagement.WorkItemManagement.Application.IntegrationEvents
 
         public async Task PublishEventsThroughEventBusAsync(Guid transactionId)
         {
-            // cache types
-            var eventTypes = Assembly.Load(Assembly.GetExecutingAssembly().FullName)
-                .GetTypes()
-                .Where(t => t.Name.EndsWith(nameof(IntegrationEvent)))
-                .ToList();
-            
-            var pendingLogEvents = await _eventLogService.RetrieveEventLogsPendingToPublishAsync(transactionId, eventTypes);
+            var pendingLogEvents = await _eventLogService.RetrieveEventLogsPendingToPublishAsync(transactionId);
 
             foreach (var logEvt in pendingLogEvents)
             {

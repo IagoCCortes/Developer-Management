@@ -43,28 +43,6 @@ namespace EventBusRabbitMQ
             _consumerChannel = CreateConsumerChannel();
             _autofac = autofac;
             _retryCount = retryCount;
-            _subsManager.OnEventRemoved += SubsManager_OnEventRemoved;
-        }
-
-        private void SubsManager_OnEventRemoved(object sender, string eventName)
-        {
-            if (!_persistentConnection.IsConnected)
-            {
-                _persistentConnection.TryConnect();
-            }
-
-            using (var channel = _persistentConnection.CreateModel())
-            {
-                channel.QueueUnbind(queue: _queueName,
-                    exchange: BROKER_NAME,
-                    routingKey: eventName);
-
-                if (_subsManager.IsEmpty)
-                {
-                    _queueName = string.Empty;
-                    _consumerChannel.Close();
-                }
-            }
         }
 
         public void Publish(IntegrationEvent @event)
@@ -150,17 +128,6 @@ namespace EventBusRabbitMQ
             }
         }
 
-        public void Unsubscribe<T, TH>()
-            where T : IntegrationEvent
-            where TH : IIntegrationEventHandler<T>
-        {
-            var eventName = _subsManager.GetEventKey<T>();
-
-            _logger.LogInformation("Unsubscribing from event {EventName}", eventName);
-
-            _subsManager.RemoveSubscription<T, TH>();
-        }
-
         public void Dispose()
         {
             if (_consumerChannel != null)
@@ -232,7 +199,7 @@ namespace EventBusRabbitMQ
                 autoDelete: false,
                 arguments: null);
 
-            channel.CallbackException += (sender, ea) =>
+            channel.CallbackException += (_, ea) =>
             {
                 _logger.LogWarning(ea.Exception, "Recreating RabbitMQ consumer channel");
 

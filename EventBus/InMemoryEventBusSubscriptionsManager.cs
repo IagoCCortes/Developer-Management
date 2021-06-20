@@ -11,8 +11,6 @@ namespace EventBus
         private readonly Dictionary<string, List<SubscriptionInfo>> _handlers;
         private readonly List<Type> _eventTypes;
 
-        public event EventHandler<string> OnEventRemoved;
-
         public InMemoryEventBusSubscriptionsManager()
         {
             _handlers = new Dictionary<string, List<SubscriptionInfo>>();
@@ -52,65 +50,12 @@ namespace EventBus
             _handlers[eventName].Add(new SubscriptionInfo(handlerType));
         }
 
-        public void RemoveSubscription<T, TH>()
-            where TH : IIntegrationEventHandler<T>
-            where T : IntegrationEvent
-        {
-            var handlerToRemove = FindSubscriptionToRemove<T, TH>();
-            var eventName = GetEventKey<T>();
-            DoRemoveHandler(eventName, handlerToRemove);
-        }
-
-        private void DoRemoveHandler(string eventName, SubscriptionInfo subsToRemove)
-        {
-            if (subsToRemove != null)
-            {
-                _handlers[eventName].Remove(subsToRemove);
-                if (!_handlers[eventName].Any())
-                {
-                    _handlers.Remove(eventName);
-                    var eventType = _eventTypes.SingleOrDefault(e => e.Name == eventName);
-                    if (eventType != null)
-                    {
-                        _eventTypes.Remove(eventType);
-                    }
-                    RaiseOnEventRemoved(eventName);
-                }
-
-            }
-        }
-
         public IEnumerable<SubscriptionInfo> GetHandlersForEvent<T>() where T : IntegrationEvent
         {
             var key = GetEventKey<T>();
             return GetHandlersForEvent(key);
         }
         public IEnumerable<SubscriptionInfo> GetHandlersForEvent(string eventName) => _handlers[eventName];
-
-        private void RaiseOnEventRemoved(string eventName)
-        {
-            var handler = OnEventRemoved;
-            handler?.Invoke(this, eventName);
-        }
-
-        private SubscriptionInfo FindSubscriptionToRemove<T, TH>()
-             where T : IntegrationEvent
-             where TH : IIntegrationEventHandler<T>
-        {
-            var eventName = GetEventKey<T>();
-            return DoFindSubscriptionToRemove(eventName, typeof(TH));
-        }
-
-        private SubscriptionInfo DoFindSubscriptionToRemove(string eventName, Type handlerType)
-        {
-            if (!HasSubscriptionsForEvent(eventName))
-            {
-                return null;
-            }
-
-            return _handlers[eventName].SingleOrDefault(s => s.HandlerType == handlerType);
-
-        }
 
         public bool HasSubscriptionsForEvent<T>() where T : IntegrationEvent
         {

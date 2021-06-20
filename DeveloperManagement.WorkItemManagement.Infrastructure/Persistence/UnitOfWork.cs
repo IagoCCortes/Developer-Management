@@ -9,12 +9,10 @@ using DeveloperManagement.Core.Domain.Interfaces;
 using DeveloperManagement.WorkItemManagement.Application.Interfaces;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.TaskAggregate;
-using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Helper;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Interfaces;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repositories;
 using EventBus;
-using IntegrationEventLogDapper;
 using Task = System.Threading.Tasks.Task;
 
 namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence
@@ -54,6 +52,12 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence
 
         public async Task<int> SaveChangesAsync()
         {
+            // Dispatch Domain Events collection. 
+            // Choices:
+            // A) Right BEFORE committing data (EF SaveChanges) into the DB will make a single transaction including  
+            // side effects from the domain event handlers which are using the same DbContext with "InstancePerLifetimeScope" or "scoped" lifetime
+            // B) Right AFTER committing data (EF SaveChanges) into the DB will make multiple transactions. 
+            // You will need to handle eventual consistency and compensatory actions in case of failures in any of the Handlers. 
             await DispatchDomainEvents();
 
             using var connection = await _connectionFactory.CreateConnectionAsync();

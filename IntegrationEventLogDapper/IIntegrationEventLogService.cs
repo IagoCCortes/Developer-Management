@@ -7,7 +7,7 @@ namespace IntegrationEventLogDapper
 {
     public interface IIntegrationEventLogService
     {
-        Task<IEnumerable<IntegrationEventLogEntry>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId, List<Type> eventTypes);
+        Task<IEnumerable<IntegrationEventLogEntry>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId);
 
         Task MarkEventAsPublishedAsync(Guid eventId);
 

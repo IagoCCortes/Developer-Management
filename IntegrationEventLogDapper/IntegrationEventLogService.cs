@@ -20,9 +20,11 @@ namespace IntegrationEventLogDapper
         }
 
         public async Task<IEnumerable<IntegrationEventLogEntry>> RetrieveEventLogsPendingToPublishAsync(
-            Guid transactionId, List<Type> eventTypes)
+            Guid transactionId)
         {
-            var tid = transactionId.ToString();
+            // cache types
+            var eventTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a => a.GetTypes().Where(t => t.IsSubclassOf(typeof(IntegrationEvent)))).ToList();
 
             var sqlConnection = new MySqlConnection(_connectionString);
             await sqlConnection.OpenAsync();
@@ -42,11 +44,14 @@ namespace IntegrationEventLogDapper
             return new List<IntegrationEventLogEntry>();
         }
 
-        public async Task MarkEventAsPublishedAsync(Guid eventId) => await UpdateEventStatus(eventId, EventState.Published);
+        public async Task MarkEventAsPublishedAsync(Guid eventId) =>
+            await UpdateEventStatus(eventId, EventState.Published);
 
-        public async Task MarkEventAsInProgressAsync(Guid eventId) => await UpdateEventStatus(eventId, EventState.InProgress);
+        public async Task MarkEventAsInProgressAsync(Guid eventId) =>
+            await UpdateEventStatus(eventId, EventState.InProgress);
 
-        public async Task MarkEventAsFailedAsync(Guid eventId) => await UpdateEventStatus(eventId, EventState.PublishedFailed);
+        public async Task MarkEventAsFailedAsync(Guid eventId) =>
+            await UpdateEventStatus(eventId, EventState.PublishedFailed);
 
         private async Task<int> UpdateEventStatus(Guid eventId, EventState status)
         {
@@ -55,9 +60,9 @@ namespace IntegrationEventLogDapper
             using var connection = sqlConnection;
 
             return await connection.ExecuteAsync(
-                "UPDATE IntegrationEventLogEntry SET EventStateId = @stateId, "+
-                   "TimesSent = CASE WHEN EventStateId = @inProgress THEN TimesSent + 1 ELSE TimesSent END " +
-                   "WHERE Id = @id;",
+                "UPDATE IntegrationEventLogEntry SET EventStateId = @stateId, " +
+                "TimesSent = CASE WHEN EventStateId = @inProgress THEN TimesSent + 1 ELSE TimesSent END " +
+                "WHERE Id = @id;",
                 new {stateId = (int) status, inProgress = (int) EventState.InProgress, id = eventId});
         }
 

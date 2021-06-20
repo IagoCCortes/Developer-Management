@@ -1,5 +1,6 @@
 ﻿using System;
 using DeveloperManagement.Core.Application;
+using DeveloperManagement.Core.Application.Validations;
 using DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggregate;
 using FluentValidation;
 

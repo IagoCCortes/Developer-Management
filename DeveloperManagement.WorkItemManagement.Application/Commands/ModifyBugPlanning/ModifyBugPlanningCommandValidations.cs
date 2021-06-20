@@ -1,4 +1,5 @@
 ﻿using DeveloperManagement.Core.Application;
+using DeveloperManagement.Core.Application.Validations;
 using DeveloperManagement.WorkItemManagement.Application.Common;
 using FluentValidation;
 
