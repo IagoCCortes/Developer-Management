@@ -11,7 +11,6 @@ using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BaseWorkItemA
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
 using DeveloperManagement.WorkItemManagement.Domain.Common.ValueObjects;
-using EventBus.Abstractions;
 using MediatR;
 
 namespace DeveloperManagement.WorkItemManagement.Application.Commands.CreateBug
@@ -45,20 +44,18 @@ namespace DeveloperManagement.WorkItemManagement.Application.Commands.CreateBug
         private readonly IUnitOfWork _uow;
         private readonly IDateTime _dateTime;
         private readonly IMimeTypeMapper _mimeTypeMapper;
-        private readonly IEventBus _eventBus;
         private readonly IWorkItemIntegrationEventService _workItemIntegrationEventService;
 
         public CreateBugCommandHandler(IUnitOfWork uow, IDateTime dateTime, IMimeTypeMapper mimeTypeMapper,
-            IEventBus eventBus, IWorkItemIntegrationEventService workItemIntegrationEventService)
+            IWorkItemIntegrationEventService workItemIntegrationEventService)
         {
             _uow = uow;
             _dateTime = dateTime;
             _mimeTypeMapper = mimeTypeMapper;
-            _eventBus = eventBus;
             _workItemIntegrationEventService = workItemIntegrationEventService;
         }
 
-        public async Task<Guid> Handle(CreateBugCommand request, CancellationToken cancellationToken)
+        public Task<Guid> Handle(CreateBugCommand request, CancellationToken cancellationToken)
         {
             var effort = new Effort(request.OriginalEstimate, request.Remaining, request.Completed);
             var builder = new Bug.BugBuilder(request.Title, request.TeamId, effort, (Priority) request.PriorityId,
@@ -83,15 +80,13 @@ namespace DeveloperManagement.WorkItemManagement.Application.Commands.CreateBug
             var bug = builder.BuildWorkItem();
 
             _uow.BugRepository.Insert(bug);
-            
-            var logEntry = _workItemIntegrationEventService.AddAndSaveEventAsync(
-                new BugCreatedIntegrationEvent(request.OriginalEstimate, request.Remaining, request.Completed));
 
-            await _uow.SaveChangesAsync();
+            if (request.SprintId.HasValue)
+                _workItemIntegrationEventService.AddAndSaveEventAsync(
+                    new BugCreatedIntegrationEvent(bug.Id, request.OriginalEstimate, request.Remaining,
+                        request.Completed, request.SprintId.Value));
 
-            _workItemIntegrationEventService.PublishEventsThroughEventBusAsync((Guid.Parse(logEntry.TransactionId)));
-
-            return bug.Id;
+            return Task.FromResult(bug.Id);
         }
     }
 }

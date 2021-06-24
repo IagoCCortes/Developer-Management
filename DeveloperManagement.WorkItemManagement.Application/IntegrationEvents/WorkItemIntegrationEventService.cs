@@ -54,7 +54,7 @@ namespace DeveloperManagement.WorkItemManagement.Application.IntegrationEvents
             }
         }
 
-        public IntegrationEventLogEntry AddAndSaveEventAsync(IntegrationEvent evt)
+        public void AddAndSaveEventAsync(IntegrationEvent evt)
         {
             _logger.LogInformation(
                 "----- Enqueuing integration event {IntegrationEventId} to repository ({@IntegrationEvent})", evt.Id,
@@ -62,8 +62,6 @@ namespace DeveloperManagement.WorkItemManagement.Application.IntegrationEvents
 
             var logEntry = new IntegrationEventLogEntry(evt);
             _uow.AddIntegrationEventLogEntry(logEntry);
-
-            return logEntry;
         }
     }
 }

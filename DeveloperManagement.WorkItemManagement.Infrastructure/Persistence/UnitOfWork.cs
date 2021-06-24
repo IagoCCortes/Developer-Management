@@ -23,15 +23,13 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence
         private readonly IDomainEventService _domainEventService;
         private readonly ICurrentUserService _currentUserService;
 
-        public Guid Id { get; set; }
-
         private readonly IDateTime _dateTime;
-        private readonly List<DatabaseOperationData> _changes;
         private readonly List<IntegrationEventLogEntry> _integrationEvents;
+        private readonly List<DatabaseOperationData> _changes;
 
         private BugRepository _bugRepository;
         private TaskRepository _taskRepository;
-
+        
         public IBugRepository BugRepository => _bugRepository ??= new BugRepository(_connectionFactory, _changes);
         public ITaskRepository TaskRepository => _taskRepository ??= new TaskRepository(_changes);
 
@@ -39,18 +37,17 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence
             IDomainEventService domainEventService,
             ICurrentUserService currentUserService, IDateTime dateTime)
         {
-            Id = Guid.NewGuid();
             _connectionFactory = connectionFactory;
             _domainEventService = domainEventService;
             _currentUserService = currentUserService;
             _dateTime = dateTime;
-            _changes = new List<DatabaseOperationData>();
             _integrationEvents = new List<IntegrationEventLogEntry>();
+            _changes = new List<DatabaseOperationData>();
         }
 
         public void AddIntegrationEventLogEntry(IntegrationEventLogEntry logEntry) => _integrationEvents.Add(logEntry);
 
-        public async Task<int> SaveChangesAsync()
+        public async Task<Guid> SaveChangesAsync()
         {
             // Dispatch Domain Events collection. 
             // Choices:
@@ -66,8 +63,9 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence
 
             var transactionId = Guid.NewGuid();
 
-            foreach (var change in _changes)
+            foreach (var change in _changes.Where(c => !c.Sent))
             {
+                change.Sent = true;
                 switch (change.OperationType)
                 {
                     case OperationType.INSERT:
@@ -92,7 +90,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence
 
             transaction.Commit();
 
-            return affectedRows;
+            return transactionId;
         }
 
         private async Task DispatchDomainEvents()

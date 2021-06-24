@@ -10,18 +10,19 @@ using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Interfac
 
 namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repositories
 {
-    public class BugRepository : GenericAggregateRepository<Bug>, IBugRepository
+    public class BugRepository : IBugRepository
     {
         private readonly IDapperConnectionFactory _connectionFactory;
+        private readonly Action<string, DatabaseEntity, OperationType> _addChange;
 
-        public BugRepository(IDapperConnectionFactory connectionFactory,
-            List<DatabaseOperationData> changes) :
-            base(changes)
+        public BugRepository(IDapperConnectionFactory connectionFactory, List<DatabaseOperationData> changes)
         {
             _connectionFactory = connectionFactory;
+            _addChange = (sql, dbEntity, operationType) =>
+                changes.Add(new DatabaseOperationData(typeof(Bug), sql, dbEntity, operationType));
         }
 
-        public override async Task<Bug> GetByIdAsync(Guid id)
+        public async Task<Bug> GetByIdAsync(Guid id)
         {
             var sql =
                 // WorkItem
@@ -50,18 +51,18 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
             var relatedWorkDaos = multi.Read<RelatedWorkDao>();
             var tagDaos = multi.Read<TagDao>();
             var attachmentDaos = multi.Read<AttachmentDao>();
-            var bug = bugDao.ToBug(workItemDao, tagDaos, attachmentDaos, relatedWorkDaos);
+            var bug = bugDao!.ToBug(workItemDao, tagDaos, attachmentDaos, relatedWorkDaos);
 
             return bug;
         }
 
-        public override void Insert(Bug bug)
+        public void Insert(Bug bug)
         {
             var workItemDao = new WorkItemDao(bug);
-            Changes.Add(new DatabaseOperationData(workItemDao.BuildInsertStatement(), workItemDao, OperationType.INSERT));
+            _addChange(workItemDao.BuildInsertStatement(), workItemDao, OperationType.INSERT);
 
-            var bugDao = new BugDao((Bug) bug);
-            Changes.Add(new DatabaseOperationData(bugDao.BuildInsertStatement(), bugDao, OperationType.INSERT));
+            var bugDao = new BugDao(bug);
+            _addChange(bugDao.BuildInsertStatement(), bugDao, OperationType.INSERT);
 
             using (var enumerator = bug.Attachments.GetEnumerator())
             {
@@ -69,23 +70,23 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
                 {
                     var attachmentDao = new AttachmentDao
                     {
-                        Path = enumerator.Current.Path, FileName = enumerator.Current.FileName,
+                        Path = enumerator.Current!.Path, FileName = enumerator.Current.FileName,
                         MimeType = enumerator.Current.MimeType, WorkItemId = bug.Id
                     };
-                    Changes.Add(new DatabaseOperationData(attachmentDao.BuildInsertStatement(), attachmentDao, OperationType.INSERT));
+                    _addChange(attachmentDao.BuildInsertStatement(), attachmentDao, OperationType.INSERT);
                 }
             }
 
             foreach (var tag in bug.Tags)
             {
                 var tagDao = new TagDao {Text = tag.Text, WorkItemId = bug.Id};
-                Changes.Add(new DatabaseOperationData(tagDao.BuildInsertStatement(), tagDao, OperationType.INSERT));
+                _addChange(tagDao.BuildInsertStatement(), tagDao, OperationType.INSERT);
             }
 
             foreach (var relatedWork in bug.RelatedWorks)
             {
                 var relatedWorkDao = new RelatedWorkDao(relatedWork, bugDao.Id);
-                Changes.Add(new DatabaseOperationData(relatedWorkDao.BuildInsertStatement(), relatedWorkDao, OperationType.INSERT));
+                _addChange(relatedWorkDao.BuildInsertStatement(), relatedWorkDao, OperationType.INSERT);
             }
         }
 
@@ -98,13 +99,13 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
             };
             var workItemSql = OperationsHelper.BuildUpdateStatement(workItemDao.GetTableName(), nameof(workItemDao.Id),
                 nameof(workItemDao.PriorityId));
-            Changes.Add(new DatabaseOperationData(workItemSql, workItemDao, OperationType.UPDATE));
+            _addChange(workItemSql, workItemDao, OperationType.UPDATE);
 
             var bugDao = new BugDao(bug);
             var bugSql =
                 OperationsHelper.BuildUpdateStatement(bugDao.GetTableName(), nameof(bug.Id),
                     nameof(bugDao.StoryPoints), nameof(bugDao.SeverityId), nameof(bugDao.ActivityId));
-            Changes.Add(new DatabaseOperationData(bugSql, bugDao, OperationType.UPDATE));
+            _addChange(bugSql, bugDao, OperationType.UPDATE);
         }
 
         public void SpecifyInfo(Bug bug)
@@ -116,13 +117,13 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
             };
             var workItemSql = OperationsHelper.BuildUpdateStatement(workItemDao.GetTableName(), nameof(workItemDao.Id),
                 nameof(workItemDao.Description));
-            Changes.Add(new DatabaseOperationData(workItemSql, workItemDao, OperationType.UPDATE));
+            _addChange(workItemSql, workItemDao, OperationType.UPDATE);
 
             var bugDao = new BugDao(bug);
             var bugSql =
                 OperationsHelper.BuildUpdateStatement(bugDao.GetTableName(), nameof(bug.Id),
                     nameof(bugDao.IntegratedInBuild), nameof(bugDao.FoundInBuild), nameof(bugDao.SystemInfo));
-            Changes.Add(new DatabaseOperationData(bugSql, bugDao, OperationType.UPDATE));
+            _addChange(bugSql, bugDao, OperationType.UPDATE);
         }
 
         public void ModifyEffort(Bug bug)
@@ -132,7 +133,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
                 OperationsHelper.BuildUpdateStatement(bugDao.GetTableName(), nameof(bug.Id),
                     nameof(bugDao.EffortOriginalEstimate), nameof(bugDao.EffortRemaining),
                     nameof(bugDao.EffortCompleted));
-            Changes.Add(new DatabaseOperationData(bugSql, bugDao, OperationType.UPDATE));
+            _addChange(bugSql, bugDao, OperationType.UPDATE);
         }
 
         public void ChangeState(Bug bug)
@@ -143,12 +144,12 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
                 StateId = (int) bug.State,
                 StateReasonId = (int) bug.StateReason,
             };
-            
+
             workItemDao.IncludeDomainEvents(bug.DomainEvents);
 
             var workItemSql = OperationsHelper.BuildUpdateStatement(workItemDao.GetTableName(), nameof(workItemDao.Id),
                 nameof(workItemDao.StateId), nameof(workItemDao.StateReasonId));
-            Changes.Add(new DatabaseOperationData(workItemSql, workItemDao, OperationType.UPDATE));
+            _addChange(workItemSql, workItemDao, OperationType.UPDATE);
         }
 
         public void AddComment(Bug bug)
@@ -160,7 +161,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
             };
             var workItemSql = OperationsHelper.BuildUpdateStatement(workItemDao.GetTableName(), nameof(workItemDao.Id),
                 nameof(workItemDao.Description));
-            Changes.Add(new DatabaseOperationData(workItemSql, workItemDao, OperationType.UPDATE));
+            _addChange(workItemSql, workItemDao, OperationType.UPDATE);
 
             var bugDao = new BugDao
             {
@@ -172,12 +173,7 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Repo
             var bugSql =
                 OperationsHelper.BuildUpdateStatement(bugDao.GetTableName(), nameof(bug.Id),
                     nameof(bugDao.IntegratedInBuild), nameof(bugDao.FoundInBuild), nameof(bugDao.SystemInfo));
-            Changes.Add(new DatabaseOperationData(bugSql, bugDao, OperationType.UPDATE));
-        }
-
-        public override void Delete(Guid id)
-        {
-            throw new NotImplementedException();
+            _addChange(bugSql, bugDao, OperationType.UPDATE);
         }
     }
 }

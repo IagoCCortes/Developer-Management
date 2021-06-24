@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using DeveloperManagement.Core.Application.Behaviours;
+using DeveloperManagement.WorkItemManagement.Application.Behaviours;
 using DeveloperManagement.WorkItemManagement.Application.IntegrationEvents;
 using DeveloperManagement.WorkItemManagement.Domain;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;
@@ -20,6 +21,7 @@ namespace DeveloperManagement.WorkItemManagement.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehaviour<,>));
 
             return services;
         }

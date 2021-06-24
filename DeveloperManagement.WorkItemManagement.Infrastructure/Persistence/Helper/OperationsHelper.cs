@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Daos;
 using EventBus;
@@ -7,13 +8,20 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Help
 {
     public static class OperationsHelper
     {
+        private static readonly Dictionary<Type, string> InsertStatementCache = new Dictionary<Type, string>();
+        
         public static string BuildInsertStatement(this DatabaseEntity dbEntity)
         {
+            var type = dbEntity.GetType();
+
+            if (InsertStatementCache.TryGetValue(dbEntity.GetType(), out var statement))
+                return statement;
+            
             var sqlBuilder = new StringBuilder($"INSERT INTO {dbEntity.GetTableName()} (");
 
             var valuesBuilder = new StringBuilder();
 
-            foreach (var property in dbEntity.GetType().GetProperties())
+            foreach (var property in type.GetProperties())
             {
                 var propertyName = property.Name;
                 sqlBuilder.Append($"{propertyName},");
@@ -23,9 +31,11 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence.Help
             sqlBuilder.Length--;
             valuesBuilder.Length--;
 
-            sqlBuilder.Append($") VALUES ({valuesBuilder});");
+            var builtStatement = sqlBuilder.Append($") VALUES ({valuesBuilder});").ToString();
+            
+            InsertStatementCache.Add(type, builtStatement);
 
-            return sqlBuilder.ToString();
+            return builtStatement;
         }
 
         public static string BuildIntegrationEventLogEntryInsertStatement(this IntegrationEventLogEntry eventLogEntry)

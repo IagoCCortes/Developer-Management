@@ -8,6 +8,6 @@ namespace DeveloperManagement.WorkItemManagement.Application.IntegrationEvents
     public interface IWorkItemIntegrationEventService
     {
         Task PublishEventsThroughEventBusAsync(Guid transactionId);
-        IntegrationEventLogEntry AddAndSaveEventAsync(IntegrationEvent evt);
+        void AddAndSaveEventAsync(IntegrationEvent evt);
     }
 }

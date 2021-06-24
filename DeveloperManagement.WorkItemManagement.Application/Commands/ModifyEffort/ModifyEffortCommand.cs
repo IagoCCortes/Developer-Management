@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using DeveloperManagement.Core.Application.Exceptions;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;
 using MediatR;
 
@@ -31,7 +32,6 @@ namespace DeveloperManagement.WorkItemManagement.Application.Commands.ModifyEffo
             bug.ModifyEffort(request.Remaining, request.Completed);
 
             _uow.BugRepository.ModifyEffort(bug);
-            await _uow.SaveChangesAsync();
             
             return Unit.Value;
         }

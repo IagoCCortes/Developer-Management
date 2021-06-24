@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using DeveloperManagement.Core.Application.Exceptions;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;
 using MediatR;
@@ -36,7 +37,6 @@ namespace DeveloperManagement.WorkItemManagement.Application.Commands.ModifyBugP
             bug.ModifyPlanning(request.StoryPoints, (Priority) request.PriorityId, (Priority) request.SeverityId,
                 (Activity?) request.ActivityId);
             _uow.BugRepository.ModifyPlanning(bug);
-            await _uow.SaveChangesAsync();
             return Unit.Value;
         }
     }

@@ -1,4 +1,5 @@
-﻿using DeveloperManagement.Core.Domain;
+﻿using System;
+using DeveloperManagement.Core.Domain;
 
 namespace DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggregate
 {
@@ -7,11 +8,9 @@ namespace DeveloperManagement.SprintManagement.Domain.AggregateRoots.SprintAggre
         public Effort Effort { get; private set; }
 
         private WorkItem() {}
-        public WorkItem(Effort effort)
+        public WorkItem(Guid id, Effort effort) : base(id)
         {
-            if (effort == null)
-                throw new DomainException(nameof(Effort), "Effort cannot be null");
-            Effort = effort;
+            Effort = effort ?? throw new DomainException(nameof(Effort), "Effort cannot be null");
         }
     }
 }

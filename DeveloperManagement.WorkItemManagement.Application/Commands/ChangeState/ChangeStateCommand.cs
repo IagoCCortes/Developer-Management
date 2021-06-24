@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using DeveloperManagement.Core.Application.Exceptions;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Enums;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;
 using MediatR;
@@ -31,7 +32,6 @@ namespace DeveloperManagement.WorkItemManagement.Application.Commands.ChangeStat
             
             bug.ModifyState((WorkItemState) request.StateId, (StateReason) request.StateReasonId);
             _uow.BugRepository.ChangeState(bug);
-            await _uow.SaveChangesAsync();
             return Unit.Value;
         }
     }

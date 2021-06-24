@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using DeveloperManagement.Core.Domain.Interfaces;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.TaskAggregate;
 
@@ -8,6 +10,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces
     {
         IBugRepository BugRepository { get; }
         ITaskRepository TaskRepository { get; }
-        Task<int> SaveChangesAsync();
+        
+        Task<Guid> SaveChangesAsync();
     }
 }

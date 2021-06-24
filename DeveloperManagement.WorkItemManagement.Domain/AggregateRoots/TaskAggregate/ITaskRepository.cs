@@ -5,8 +5,7 @@ using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;
 
 namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.TaskAggregate
 {
-    public interface ITaskRepository : IGenericWriteRepository<Task>
+    public interface ITaskRepository : IRepository<Task>
     {
-        Task<Task> GetByIdAsync(Guid id);
     }
 }

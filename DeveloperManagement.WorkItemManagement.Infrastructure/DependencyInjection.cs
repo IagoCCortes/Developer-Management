@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using DeveloperManagement.Core.Application.Interfaces;
+﻿using DeveloperManagement.Core.Application.Interfaces;
 using DeveloperManagement.Core.Domain.Interfaces;
 using DeveloperManagement.WorkItemManagement.Application.Interfaces;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;

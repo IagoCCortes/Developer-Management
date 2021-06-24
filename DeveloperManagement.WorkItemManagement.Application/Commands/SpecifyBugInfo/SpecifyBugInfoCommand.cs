@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using DeveloperManagement.Core.Application.Exceptions;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Interfaces;
 using MediatR;
 
@@ -34,7 +35,6 @@ namespace DeveloperManagement.WorkItemManagement.Application.Commands.SpecifyBug
             bug.SpecifyBugInfo(request.Description, request.SystemInfo, request.FoundInBuild, request.IntegratedInBuild);
             
             _uow.BugRepository.SpecifyInfo(bug);
-            await _uow.SaveChangesAsync();
             
             return Unit.Value;
         }
