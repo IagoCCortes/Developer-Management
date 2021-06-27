@@ -2,6 +2,7 @@
 using System.Linq;
 using DeveloperManagement.Core.Domain;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BaseWorkItemAggregate;
+using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BaseWorkItemAggregate.Events;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate;
 using DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggregate.Events;
 using DeveloperManagement.WorkItemManagement.Domain.Common.Entities;
@@ -15,7 +16,7 @@ namespace WorkItemManagement.UnitTests.Domain.BugAggregate
     public class BugTests
     {
         [Fact]
-        public void BugBuild_GivenValidParameters_ShouldAddBugCreatedEvent()
+        public void BugBuild_GivenValidParameters_ShouldAddDomainEvent()
         {
             //Arrange    
             var bug = CreateBug();
@@ -51,7 +52,7 @@ namespace WorkItemManagement.UnitTests.Domain.BugAggregate
         }
 
         [Fact]
-        public void ModifyPlanning_GivenValidParameters_ShouldAddBugPlanningModifiedEvent()
+        public void ModifyPlanning_GivenValidParameters_ShouldModifyPlanningAndAddDomainEvent()
         {
             //Arrange    
             var storyPoints = 20;
@@ -65,6 +66,128 @@ namespace WorkItemManagement.UnitTests.Domain.BugAggregate
 
             //Assert
             bug.DomainEvents.Should().Contain(de => de is BugPlanningModifiedEvent);
+            bug.StoryPoints.Should().Be(storyPoints);
+            bug.Priority.Should().Be(priority);
+            bug.Severity.Should().Be(severity);
+            bug.Activity.Should().Be(activity);
+        }
+        
+        [Fact]
+        public void SpecifyBugInfo_GivenValidParameters_ShouldAddBugInfoAndAddDomainEvent()
+        {
+            //Arrange    
+            var description = "Test";
+            var systemInfo = "Test";
+            var foundInBuild = "Test";
+            var integratedInBuild = "Test";
+            var bug = CreateBug();
+
+            //Act
+            bug.SpecifyBugInfo(description, systemInfo, foundInBuild, integratedInBuild);
+
+            //Assert
+            bug.DomainEvents.Should().Contain(de => de is BugInfoModifiedEvent);
+            bug.Description.Should().Be(description);
+            bug.SystemInfo.Should().Be(systemInfo);
+            bug.FoundInBuild.Should().Be(foundInBuild);
+            bug.IntegratedInBuild.Should().Be(integratedInBuild);
+        }
+        
+        [Fact]
+        public void ModifyEffort_GivenValidParameters_ShouldModifyEffortAndAddDomainEvent()
+        {
+            //Arrange    
+            var remaining = 10;
+            var completed = 5;
+            var bug = CreateBug();
+
+            //Act
+            bug.ModifyEffort(remaining, completed);
+
+            //Assert
+            bug.DomainEvents.Should().Contain(de => de is BugEffortModifiedEvent);
+            bug.Effort.Remaining.Should().Be(remaining);
+            bug.Effort.Completed.Should().Be(completed);
+        }
+        
+        [Theory]
+        [InlineData(WorkItemState.New, StateReason.New)]
+        [InlineData(WorkItemState.New, StateReason.BuildFailure)]
+        [InlineData(WorkItemState.Active, StateReason.Approved)]
+        [InlineData(WorkItemState.Active, StateReason.Investigate)]
+        [InlineData(WorkItemState.Resolved, StateReason.Fixed)]
+        [InlineData(WorkItemState.Resolved, StateReason.AsDesigned)]
+        [InlineData(WorkItemState.Resolved, StateReason.CannotReproduce)]
+        [InlineData(WorkItemState.Resolved, StateReason.CopiedToBacklog)]
+        [InlineData(WorkItemState.Resolved, StateReason.Deferred)]
+        [InlineData(WorkItemState.Resolved, StateReason.Duplicate)]
+        [InlineData(WorkItemState.Resolved, StateReason.Obsolete)]
+        [InlineData(WorkItemState.Closed, StateReason.FixedAndVerified)]
+        [InlineData(WorkItemState.Closed, StateReason.AsDesigned)]
+        [InlineData(WorkItemState.Closed, StateReason.CannotReproduce)]
+        [InlineData(WorkItemState.Closed, StateReason.CopiedToBacklog)]
+        [InlineData(WorkItemState.Closed, StateReason.Deferred)]
+        [InlineData(WorkItemState.Closed, StateReason.Duplicate)]
+        [InlineData(WorkItemState.Closed, StateReason.Obsolete)]
+        public void ModifyState_GivenValidParameters_ShouldModifyStateAndAddDomainEvent(WorkItemState state, StateReason stateReason)
+        {
+            //Arrange
+            var bug = CreateBug();
+
+            //Act
+            bug.ModifyState(state, stateReason);
+
+            //Assert
+            bug.DomainEvents.Should().Contain(de => de is WorkItemStateModified);
+            bug.State.Should().Be(state);
+            bug.StateReason.Should().Be(stateReason);
+        }
+        
+        [Fact]
+        public void ModifyState_InvalidBugState_ShouldThrowException()
+        {
+            //Arrange
+            var state = WorkItemState.Removed;
+            var stateReason = StateReason.Approved;
+            var bug = CreateBug();
+            Action action = () => bug.ModifyState(state, stateReason); 
+
+            //Act - Assert
+            action.Should().Throw<DomainException>()
+                .WithMessage("One or more Domain invariants were violated")
+                .Where(de => de.Errors[nameof(bug.State)].Contains($"A {nameof(Bug)} does not have a {state} state"));
+        }
+        
+        [Fact]
+        public void ModifyState_InvalidStateAndReasonCombination_ShouldThrowException()
+        {
+            //Arrange
+            var state = WorkItemState.New;
+            var stateReason = StateReason.Approved;
+            var bug = CreateBug();
+            Action action = () => bug.ModifyState(state, stateReason); 
+
+            //Act - Assert
+            action.Should().Throw<DomainException>()
+                .WithMessage("One or more Domain invariants were violated")
+                .Where(de => de.Errors[nameof(bug.StateReason)].Contains("Invalid reason for current state"));
+        }
+        
+        [Fact]
+        public void ModifyState_ClosedState_ShouldUpdateEffort()
+        {
+            //Arrange
+            var state = WorkItemState.Closed;
+            var stateReason = StateReason.FixedAndVerified;
+            var bug = CreateBug();
+            var expectedCompleted = bug.Effort.Completed + bug.Effort.Remaining;
+            
+            //Act
+            bug.ModifyState(state, stateReason);
+
+            //Assert
+            bug.Effort.Remaining.Should().Be(0);
+            bug.Effort.Completed.Should().Be(expectedCompleted);
         }
 
         private Bug CreateBug()

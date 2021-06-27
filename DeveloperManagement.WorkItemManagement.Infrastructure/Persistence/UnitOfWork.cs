@@ -27,11 +27,15 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence
         private readonly List<IntegrationEventLogEntry> _integrationEvents;
         private readonly List<DatabaseOperationData> _changes;
 
-        private BugRepository _bugRepository;
-        private TaskRepository _taskRepository;
+        private IBugRepository _bugRepository;
+        private ITaskRepository _taskRepository;
+        private IIntegrationEventRepository _integrationEventRepository;
         
         public IBugRepository BugRepository => _bugRepository ??= new BugRepository(_connectionFactory, _changes);
         public ITaskRepository TaskRepository => _taskRepository ??= new TaskRepository(_changes);
+
+        public IIntegrationEventRepository IntegrationEventRepository =>
+            _integrationEventRepository ??= new IntegrationEventRepository(_integrationEvents);
 
         public UnitOfWork(IDapperConnectionFactory connectionFactory,
             IDomainEventService domainEventService,
@@ -44,8 +48,6 @@ namespace DeveloperManagement.WorkItemManagement.Infrastructure.Persistence
             _integrationEvents = new List<IntegrationEventLogEntry>();
             _changes = new List<DatabaseOperationData>();
         }
-
-        public void AddIntegrationEventLogEntry(IntegrationEventLogEntry logEntry) => _integrationEvents.Add(logEntry);
 
         public async Task<Guid> SaveChangesAsync()
         {

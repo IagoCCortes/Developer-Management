@@ -61,7 +61,7 @@ namespace DeveloperManagement.WorkItemManagement.Application.IntegrationEvents
                 evt);
 
             var logEntry = new IntegrationEventLogEntry(evt);
-            _uow.AddIntegrationEventLogEntry(logEntry);
+            _uow.IntegrationEventRepository.Insert(logEntry);
         }
     }
 }

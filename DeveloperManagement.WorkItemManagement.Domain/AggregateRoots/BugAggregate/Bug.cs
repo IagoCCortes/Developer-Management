@@ -56,6 +56,7 @@ namespace DeveloperManagement.WorkItemManagement.Domain.AggregateRoots.BugAggreg
         {
             Effort = new Effort(Effort.OriginalEstimate, remaining, completed);
             DomainEvents.Add(new BugEffortModifiedEvent(Effort));
+            // if remaining + completed > originalestimate => add badestimate event 
         }
 
         public void ModifyState(WorkItemState state, StateReason stateReason)
